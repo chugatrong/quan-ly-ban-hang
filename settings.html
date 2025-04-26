@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Cài đặt - Hệ Thống In Bill</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container settings-container">
+        <div class="header-with-nav">
+            <h1>Cài đặt Hệ Thống</h1>
+            <a href="index.html" class="btn-back">Quay lại trang chính</a>
+        </div>
+        
+        <div class="settings-form">
+            <h2>Thông tin cửa hàng</h2>
+            <div class="form-group">
+                <label for="store-name">Tên cửa hàng:</label>
+                <input type="text" id="store-name" placeholder="Nhập tên cửa hàng">
+            </div>
+            <div class="form-group">
+                <label for="store-phone">Số điện thoại:</label>
+                <input type="text" id="store-phone" placeholder="Nhập số điện thoại">
+            </div>
+            <div class="form-group">
+                <label for="store-address">Địa chỉ:</label>
+                <input type="text" id="store-address" placeholder="Nhập địa chỉ cửa hàng">
+            </div>
+            <div class="form-group">
+                <label for="store-email">Email:</label>
+                <input type="email" id="store-email" placeholder="Nhập email cửa hàng (nếu có)">
+            </div>
+            
+            <h2>Thông tin thanh toán</h2>
+            <div class="form-group">
+                <label for="bank-name">Ngân hàng:</label>
+                <select id="bank-name">
+                    <option value="">-- Chọn ngân hàng --</option>
+                    <option value="VIETCOMBANK">Vietcombank</option>
+                    <option value="VIETINBANK">Vietinbank</option>
+                    <option value="BIDV">BIDV</option>
+                    <option value="AGRIBANK">Agribank</option>
+                    <option value="TECHCOMBANK">Techcombank</option>
+                    <option value="MBBANK">MB Bank</option>
+                    <option value="ACB">ACB</option>
+                    <option value="VPBANK">VPBank</option>
+                    <option value="TPBANK">TPBank</option>
+                    <option value="SACOMBANK">Sacombank</option>
+                    <!-- Có thể thêm các ngân hàng khác nếu cần -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="bank-account">Số tài khoản:</label>
+                <input type="text" id="bank-account" placeholder="Nhập số tài khoản ngân hàng">
+            </div>
+            <div class="form-group">
+                <label for="account-name">Tên chủ tài khoản:</label>
+                <input type="text" id="account-name" placeholder="Nhập tên chủ tài khoản">
+            </div>
+            
+            <div class="qr-code-section">
+                <h3>QR Code thanh toán</h3>
+                <div class="qr-preview">
+                    <div id="qr-container"></div>
+                    <p id="qr-status">Nhập thông tin ngân hàng để tạo mã QR</p>
+                </div>
+                <div class="qr-actions">
+                    <button id="generate-qr" class="btn-primary">Tạo QR Code</button>
+                    <button id="download-qr" class="btn-secondary" disabled>Tải xuống QR Code</button>
+                </div>
+            </div>
+            
+            <h2>Tùy chỉnh hóa đơn</h2>
+            <div class="form-group">
+                <label for="invoice-note">Ghi chú cuối hóa đơn:</label>
+                <textarea id="invoice-note" rows="3" placeholder="Ví dụ: Cảm ơn quý khách đã sử dụng dịch vụ!"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="return-policy">Chính sách đổi trả:</label>
+                <textarea id="return-policy" rows="3" placeholder="Ví dụ: Hàng mua rồi được đổi lại trong vòng 3 ngày!"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button id="save-settings" class="btn-primary">Lưu cài đặt</button>
+                <button id="reset-settings" class="btn-danger">Khôi phục mặc định</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Thêm thư viện QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html> 

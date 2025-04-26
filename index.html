@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hệ Thống In Bill</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="print-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* Inline styles để đảm bảo in ấn đúng */
+        @media print {
+            @page {
+                size: 80mm auto !important;
+                margin: 0 !important;
+            }
+            
+            body * {
+                visibility: hidden !important;
+            }
+            
+            #print-area, #print-area * {
+                visibility: visible !important;
+            }
+            
+            #print-area {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background-color: white !important;
+            }
+            
+            .modal {
+                display: none !important;
+            }
+        }
+        
+        /* Styles mới cho layout 2 cột */
+        .main-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .left-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .right-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .bottom-section {
+            width: 100%;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-with-action">
+            <h1>Hệ Thống In Bill</h1>
+            <a href="settings.html" class="settings-button">Cài đặt</a>
+        </div>
+        
+        <div class="main-layout">
+            <!-- Cột bên trái - Danh sách món ăn -->
+            <div class="left-column">
+                <div class="menu-section">
+                    <div class="menu-header">
+                        <h2>Danh sách món ăn</h2>
+                        <div class="menu-controls">
+                            <div class="search-container">
+                                <input type="text" id="menu-search" placeholder="Tìm kiếm món ăn...">
+                                <div id="search-results" class="search-results"></div>
+                            </div>
+                            <button id="toggle-menu" class="toggle-button">Thu gọn</button>
+                        </div>
+                    </div>
+                    <div id="menu-container">
+                        <div id="menu-items" class="menu-grid"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cột bên phải - Thông tin hóa đơn -->
+            <div class="right-column">
+                <div id="bill-container" class="bill-section">
+                    <h2>Hóa đơn</h2>
+                    <div class="bill-info">
+                    </div>
+     
+                    <div class="bill-info payment-method">
+                        <div class="qr-option">
+                            <input type="checkbox" id="show-qr-in-bill">
+                            <label for="show-qr-in-bill">Hiển thị QR thanh toán trên hóa đơn</label>
+                        </div>
+                        <div id="qr-payment-section" class="qr-payment-section" style="display: none;">
+                            <button id="show-qr" class="btn-secondary">Hiển thị QR thanh toán</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bill-items">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Món ăn</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bill-items-body">
+                                <!-- Dữ liệu hóa đơn sẽ được thêm vào đây -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bill-summary">
+                        <div class="total">Tổng tiền: <span id="total-amount">0</span>đ</div>
+                    </div>
+                    
+                    <div class="bill-actions">
+                        <button id="print-bill">In hóa đơn</button>
+                        <button id="clear-bill">Xóa hóa đơn</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phần dưới cùng - Cài đặt và nhập liệu -->
+            <div class="bottom-section">
+                <div class="file-section">
+                    <label for="excel-file">Chọn file Excel chứa danh sách món ăn:</label>
+                    <input type="file" id="excel-file" accept=".xlsx, .xls">
+                    <div class="excel-guide">
+                        <a href="menu-mau.html" target="_blank">Xem hướng dẫn định dạng file Excel</a> | 
+                        <a href="menu-mau.xlsx.html" target="_blank">Tải xuống file Excel mẫu</a>
+                    </div>
+                    <div class="save-data-option">
+                        <input type="checkbox" id="save-menu-data" checked>
+                        <label for="save-menu-data">Lưu danh sách món cho lần sau</label>
+                        <button id="clear-saved-data" class="small-button">Xóa dữ liệu đã lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- QR Modal -->
+    <div id="qr-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Quét mã QR để thanh toán</h3>
+            <div id="qr-image"></div>
+            <p>Số tiền: <span id="qr-amount"></span></p>
+        </div>
+    </div>
+    
+    <div id="print-area" class="print-only">
+        <!-- Nội dung in sẽ được tạo động bằng JavaScript -->
+    </div>
+    
+    <!-- Thêm iframe cho việc in ấn để đảm bảo CSS được áp dụng chính xác -->
+    <iframe id="print-frame" style="position: absolute; width: 0; height: 0; border: 0;"></iframe>
+    
+    <!-- Thêm link tới file print-styles.css trong phần print-only -->
+    <link rel="stylesheet" href="print-styles.css" media="print">
+    
+    <script src="script.js"></script>
+</body>
+</html> 

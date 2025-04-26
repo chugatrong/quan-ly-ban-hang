@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Định Dạng File Excel Mẫu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .note {
+            background-color: #fff8e1;
+            padding: 10px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .download-button {
+            background-color: #1890ff;
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Định Dạng File Excel Mẫu</h1>
+        
+        <p>Để sử dụng chức năng nhập danh sách món ăn từ file Excel, file Excel của bạn nên có cấu trúc như sau:</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên món</th>
+                    <th>Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Phở bò</td>
+                    <td>50000</td>
+                </tr>
+                <tr>
+                    <td>Bún chả</td>
+                    <td>45000</td>
+                </tr>
+                <tr>
+                    <td>Cơm rang</td>
+                    <td>40000</td>
+                </tr>
+                <tr>
+                    <td>Gà rán</td>
+                    <td>60000</td>
+                </tr>
+                <tr>
+                    <td>Bánh mì</td>
+                    <td>25000</td>
+                </tr>
+                <tr>
+                    <td>Cà phê</td>
+                    <td>30000</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="note">
+            <p><strong>Lưu ý:</strong></p>
+            <ul>
+                <li>Tên cột có thể là: "Tên món", "Tên", "Món", hoặc tương tự.</li>
+                <li>Tên cột giá có thể là: "Giá", "Đơn giá", "Giá tiền", hoặc tương tự.</li>
+                <li>Giá nên được nhập dưới dạng số, không có đơn vị tiền tệ hoặc dấu phân cách hàng nghìn.</li>
+                <li>Nếu không có tên cột, hệ thống sẽ sử dụng cột đầu tiên làm tên món và cột thứ hai làm giá.</li>
+            </ul>
+        </div>
+        
+        <p>Sau khi chuẩn bị file Excel theo định dạng trên, bạn có thể tải lên hệ thống bằng cách sử dụng nút "Chọn file" trong ứng dụng.</p>
+        
+        <div class="button-container">
+            <a href="menu-mau.xlsx.html" class="button download-button">Tải xuống file Excel mẫu</a>
+            <a href="index.html" class="button">Quay lại trang chính</a>
+        </div>
+    </div>
+</body>
+</html> 

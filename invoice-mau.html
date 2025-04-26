@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+    <html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Phiếu Tính Tiền</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+              rel="stylesheet">
+        <style>
+
+            body {
+                width: 80mm;
+                margin: auto;
+                padding: 5px;
+                font-size: 14px;
+                font-family: "Roboto", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: 600;
+                font-style: normal;
+                font-variation-settings: "wdth" 100;
+            }
+
+            .text-left.info p {
+                margin: 1px 0;
+            }
+
+            .invoice-bar {
+                border-top: dashed 1px #000;
+                padding-top: 10px;
+            }
+
+                .invoice-bar p {
+                    margin: 2px 0;
+                    text-align: center;
+                }
+
+                .invoice-bar b {
+                }
+
+            h2 {
+                font-size: 19px !important;
+                font-weight: bold;
+                text-align: center;
+                margin: 10px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+            }
+
+            table {
+                width: 100%;
+                table-layout: fixed; /* Cố định chiều rộng bảng */
+                word-wrap: break-word; /* Đảm bảo nội dung không tràn */
+            }
+
+            th {
+                background-color: #ffffff;
+                text-align: center;
+                padding: 10px 0;
+                margin-bottom: 5px;
+                font-weight: bold;
+                border-bottom: solid 1px;
+            }
+
+            td {
+                padding: 3px;
+            }
+
+            .text-right {
+                text-align: right !important;
+            }
+
+            .text-center {
+                text-align: center !important;
+            }
+
+            .table-total td {
+                font-weight: bold;
+                padding: 2px;
+            }
+
+            .table-total tr:first-child td {
+                padding-top: 10px;
+                /* Thêm khoảng cách trên dòng đầu tiên */
+            }
+
+            .border-bottom {
+                border-bottom: 1px dashed #7c7c7c !important;
+            }
+
+            @media print {
+                @page {
+                    size: 80mm auto; /* Giữ cố định chiều rộng 80mm */
+                    margin: 0; /* Xóa hoàn toàn lề */
+                }
+
+                body {
+                    width: 80mm;
+                    margin: 0;
+                    padding: 0; /* Tránh lề thừa */
+                }
+            }
+        </style>
+    </head>
+
+    <body style="max-width: 80mm; margin: auto; padding: 10px; ">
+
+        <div class="main-wrapper">
+            <div class="page-wrapper">
+                <div class="modal-body" id="invoice">
+                    <div class="icon-head text-center mb-2">
+                        <img src="https://pos.theblues.vn/Content/assets/img/logofinal.png" height="25" alt="Logo">
+                    </div>
+                        <div class="text-left info">
+                            <p><b>Cửa hàng:</b>  KHO TEST</p>
+                            <p><b>Đia chỉ:</b>  KHO TEST (KHONG SU DUNG)</p>
+                            <p><b>Email:</b> test3@theblues.vn</p>
+                        </div>
+
+
+                    <h2>PHIẾU TÍNH TIỀN</h2>
+                    <div class="invoice-header" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                        <div>
+                            <b>Số hóa đơn:</b>
+                            <div style="font-size: 13px; font-weight: bold;">COOP_HPSO2504260002</div>
+                        </div>
+                        <div class="text-right">
+                            <b>Ngày:</b> 26/04/2025
+                            <div style="font-size: 12px;">15:28</div>
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- Bảng Sản Phẩm -->
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="text-left">Sản phẩm</th>
+                                <th class="text-right">Đơn giá</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-right">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                                <tr>
+                                    <td colspan="4">
+                                        <b>
+                                            1. 893491206104 -
+                                            Quần Nam QN2-KP1S/19-039-HERRINGBONE
+                                        </b>
+                                    </td>
+                                </tr>
+                                <tr class="border-bottom">
+                                    <td></td>
+                                    <td class="text-right">340,000</td>
+                                    <td class="text-center" style="width: 15%"> x 1</td>
+                                    <td class="text-right">340,000</td>
+                                </tr>
+
+
+                        </tbody>
+                    </table>
+
+                    <!-- Bảng Tổng Kết -->
+                    <table class="table-total">
+                            <tr>
+                                <td><b>Tiền hàng</b></td>
+                                <td class="text-right">340,000</td>
+                            </tr>
+
+                        
+                        <tr>
+                            <td><b>Tổng số lượng</b></td>
+                            <td class="text-right">
+                                1
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><b>Giảm giá</b> </td>
+                            <td class="text-right">0</td>
+                        </tr>
+                        <tr>
+                            <td><b>Tổng tiền thanh toán</b></td>
+                            <td class="text-right">340,000</td>
+                        </tr>
+                        <tr>
+                            <td><b>Hình thức thanh toán</b></td>
+                            <td class="text-right">Tiền mặt</td>
+                        </tr>
+                    </table>
+                    <!-- Lời Nhắn -->
+                    <div class="invoice-bar">
+                        <p>** Vui lòng giữ lại phiếu sau khi thanh toán và khi đổi hàng.</p>
+                        <p>Hàng mua rồi được đổi lại trong vòng 1 tuần (Không áp dụng cho hàng SALE OFF)!</p>
+                        <p><b>Cảm ơn bạn đã tham quan và mua sắm</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
