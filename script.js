@@ -385,11 +385,10 @@ document.addEventListener('DOMContentLoaded', function() {
             menuItemElement.innerHTML = `
                 <h3>${item.name}</h3>
                 <p>${formatCurrency(item.price)}</p>
-                <button data-index="${index}">Thêm vào hóa đơn</button>
             `;
             
-            const addButton = menuItemElement.querySelector('button');
-            addButton.addEventListener('click', function() {
+            // Thêm sự kiện click trực tiếp vào section món
+            menuItemElement.addEventListener('click', function() {
                 addToBill(item);
             });
             
@@ -417,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         renderBillItems();
-        updateTotalAmount();
+        calculateTotal();
     }
     
     // Hiển thị các món trong hóa đơn
@@ -481,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
             billItems[index].quantity -= 1;
             billItems[index].total = billItems[index].price * billItems[index].quantity;
             renderBillItems();
-            updateTotalAmount();
+            calculateTotal();
         } else {
             removeItem(index);
         }
@@ -492,25 +491,49 @@ document.addEventListener('DOMContentLoaded', function() {
         billItems[index].quantity += 1;
         billItems[index].total = billItems[index].price * billItems[index].quantity;
         renderBillItems();
-        updateTotalAmount();
+        calculateTotal();
     }
     
     // Xóa món khỏi hóa đơn
     function removeItem(index) {
         billItems.splice(index, 1);
         renderBillItems();
-        updateTotalAmount();
+        calculateTotal();
     }
     
     // Cập nhật tổng tiền
-    function updateTotalAmount() {
-        const total = billItems.reduce((sum, item) => sum + item.total, 0);
-        totalAmountElement.textContent = formatCurrency(total);
+    function calculateTotal() {
+        // Tính tổng tiền từ mảng billItems
+        let subtotal = 0;
+        billItems.forEach(item => {
+            subtotal += item.total;
+        });
+
+        // Tính toán giảm giá
+        const discountType = document.querySelector('input[name="discount-type"]:checked').value;
+        const discountValue = parseFloat(document.querySelector('#discount-value').value) || 0;
+        let discountAmount = 0;
+
+        if (discountType === 'percentage') {
+            discountAmount = subtotal * (discountValue / 100);
+        } else {
+            discountAmount = discountValue;
+        }
+
+        const total = subtotal - discountAmount;
+
+        // Cập nhật hiển thị
+        document.querySelector('#subtotal-amount').textContent = formatCurrency(subtotal);
+        document.querySelector('#discount-amount').textContent = formatCurrency(discountAmount);
+        document.querySelector('#total-amount').textContent = formatCurrency(total);
     }
     
     // Định dạng hiển thị tiền tệ
     function formatCurrency(amount) {
-        return amount.toLocaleString('vi-VN') + 'đ';
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
     }
     
     // Tạo mã hóa đơn ngẫu nhiên
@@ -534,7 +557,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const paymentMethod = 'Tiền mặt'; // Luôn hiển thị "Tiền mặt"
-        const total = billItems.reduce((sum, item) => sum + item.total, 0);
+        
+        // Tính tổng tiền và giảm giá
+        let subtotal = 0;
+        billItems.forEach(item => {
+            subtotal += item.total;
+        });
+        
+        // Lấy thông tin giảm giá
+        const discountType = document.querySelector('input[name="discount-type"]:checked').value;
+        const discountValue = parseFloat(document.querySelector('#discount-value').value) || 0;
+        let discountAmount = 0;
+        
+        if (discountType === 'percentage') {
+            discountAmount = subtotal * (discountValue / 100);
+        } else {
+            discountAmount = discountValue;
+        }
+        
+        const total = subtotal - discountAmount;
+        
         const date = new Date();
         const dateString = date.toLocaleDateString('vi-VN');
         const timeString = date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
@@ -574,16 +616,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let qrCodeHTML = '';
         if (showQrInBillCheckbox && showQrInBillCheckbox.checked && storeSettings && storeSettings.bankAccount) {
             qrCodeHTML = `
-                <div style="display: flex; align-items: center; margin: 5px 0; padding: 5px; background-color: #f9f9f9; border-bottom: 1px dashed #ddd; font-size: 9px;">
-                    <div style="flex: 0 0 45px; text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; margin: 10px 0; padding: 10px; background-color: #f9f9f9; border: 1px dashed #ddd; font-size: 10px; text-align: center;">
+                    <div style="flex: 0 0 60px; text-align: center; margin-right: 10px;">
                         <img src="https://img.vietqr.io/image/${storeSettings.bankName}-${storeSettings.bankAccount}-qr_only.jpg?amount=${total}&addInfo=Thanh toan hoa don ${invoiceCode}&accountName=${encodeURIComponent(storeSettings.accountName || '')}" 
                             alt="QR thanh toán" style="width: 60px; height: 60px; display: block; margin: 0 auto;">
                     </div>
-                    <div style="flex: 1; padding-left: 5px; line-height: 1.2;">
-                        <p style="margin: 1px 0"><b>NH:</b> ${storeSettings.bankName}</p>
-                        <p style="margin: 1px 0"><b>STK:</b> ${storeSettings.bankAccount}</p>
-                        <p style="margin: 1px 0"><b>ND:</b> HD${invoiceCode}</p>
-                        <p style="margin: 1px 0"><b>Số tiền:</b> ${formatCurrency(total)}</p>
+                    <div style="flex: 1; text-align: left; line-height: 1.4;">
+                        <p style="margin: 2px 0"><b>NH:</b> ${storeSettings.bankName}</p>
+                        <p style="margin: 2px 0"><b>STK:</b> ${storeSettings.bankAccount}</p>
+                        <p style="margin: 2px 0"><b>ND:</b> HD${invoiceCode}</p>
+                        <p style="margin: 2px 0"><b>Số tiền:</b> ${formatCurrency(total)}</p>
                     </div>
                 </div>
             `;
@@ -596,6 +638,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (storeEmail) {
             contactInfoHTML += `<p><b>Email:</b> ${storeEmail}</p>`;
+        }
+        
+        // Tạo HTML cho phần tổng kết với giảm giá
+        let summaryHTML = '';
+        if (discountAmount > 0) {
+            summaryHTML = `
+                <table class="table-total">
+                    <tr>
+                        <td><b>Tiền hàng</b></td>
+                        <td class="text-right">${formatCurrency(subtotal)}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Giảm giá</b></td>
+                        <td class="text-right">${formatCurrency(discountAmount)}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Tổng tiền</b></td>
+                        <td class="text-right">${formatCurrency(total)}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Hình thức thanh toán</b></td>
+                        <td class="text-right">${paymentMethod}</td>
+                    </tr>
+                </table>
+            `;
+        } else {
+            summaryHTML = `
+                <table class="table-total">
+                    <tr>
+                        <td><b>Tiền hàng</b></td>
+                        <td class="text-right">${formatCurrency(subtotal)}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Hình thức thanh toán</b></td>
+                        <td class="text-right">${paymentMethod}</td>
+                    </tr>
+                </table>
+            `;
         }
         
         // Sử dụng mẫu HTML dựa theo invoice-mau.html
@@ -745,32 +825,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             </table>
                             
                             <!-- Bảng Tổng Kết -->
-                            <table class="table-total">
-                                <tr>
-                                    <td><b>Tiền hàng</b></td>
-                                    <td class="text-right">${formatCurrency(total)}</td>
-                                </tr> 
-                                <tr>
-                                    <td><b>Hình thức thanh toán</b></td>
-                                    <td class="text-right">${paymentMethod}</td>
-                                </tr>
-                            </table>
+                            ${summaryHTML}
                             
                             <!-- QR thanh toán nếu đã chọn hiển thị QR -->
-                            ${showQrInBillCheckbox && showQrInBillCheckbox.checked && storeSettings && storeSettings.bankAccount ? `
-                            <div style="display: flex; align-items: center; margin: 5px 0; padding: 5px; background-color: #f9f9f9; border-bottom: 1px dashed #ddd; font-size: 9px;">
-                                <div style="flex: 0 0 45px; text-align: center;">
-                                    <img src="https://img.vietqr.io/image/${storeSettings.bankName}-${storeSettings.bankAccount}-qr_only.jpg?amount=${total}&addInfo=Thanh toan hoa don ${invoiceCode}&accountName=${encodeURIComponent(storeSettings.accountName || '')}" 
-                                         alt="QR thanh toán" style="width: 60px; height: 60px; display: block; margin: 0 auto;">
-                                </div>
-                                <div style="flex: 1; padding-left: 5px; line-height: 1.2;">
-                                    <p style="margin: 1px 0"><b>NH:</b> ${storeSettings.bankName}</p>
-                                    <p style="margin: 1px 0"><b>STK:</b> ${storeSettings.bankAccount}</p>
-                                    <p style="margin: 1px 0"><b>ND:</b> HD${invoiceCode}</p>
-                                    <p style="margin: 1px 0"><b>Số tiền:</b> ${formatCurrency(total)}</p>
-                                </div>
-                            </div>
-                            ` : ''}
+                            ${qrCodeHTML}
                             
                             <!-- Lời Nhắn -->
                             <div class="invoice-bar">
@@ -850,15 +908,24 @@ document.addEventListener('DOMContentLoaded', function() {
             printFrame.onload();
             clearTimeout(fallbackTimeout);
         };
+        
+        // Sau khi in xong, reset giá trị giảm giá về 0
+        setTimeout(() => {
+            document.querySelector('#discount-value').value = '0';
+            calculateTotal();
+        }, 1000);
     }
     
     // Hàm xóa hóa đơn
     function clearBill() {
         billItems = [];
         renderBillItems();
-        updateTotalAmount();
+        calculateTotal();
         customerNameInput.value = '';
         tableNumberInput.value = '';
+        // Reset giá trị giảm giá về 0
+        document.querySelector('#discount-value').value = '0';
+        calculateTotal();
     }
     
     // Sự kiện xóa hóa đơn
@@ -869,20 +936,142 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tạo một số món ăn mẫu để hiển thị khi không có file Excel
     function createSampleMenuItems() {
         menuItems = [
-            { name: 'Phở bò', price: 50000 },
-            { name: 'Bún chả', price: 45000 },
-            { name: 'Cơm rang', price: 40000 },
-            { name: 'Gà rán', price: 60000 },
-            { name: 'Bánh mì', price: 25000 },
-            { name: 'Cà phê', price: 30000 }
+            // các món nhậu 
+            { name: 'Bia', price: 25000, image: 'bia.jpg' },
+            { name: 'Nước', price: 15000, image: 'nuoc.jpg' },
+            { name: 'Bánh', price: 10000, image: 'banh.jpg' },
+            { name: 'Kem', price: 30000, image: 'kem.jpg' },
+            { name: 'Trà', price: 20000, image: 'tra.jpg' },
+            { name: 'Cà phê', price: 25000, image: 'cafe.jpg' },
+            
         ];
         renderMenuItems();
+    }
+    
+    // Kiểm tra thông tin cài đặt bắt buộc
+    function checkRequiredSettings() {
+        if (!storeSettings) {
+            showSettingsModal();
+            return false;
+        }
+        
+        // Kiểm tra các thông tin bắt buộc
+        const requiredFields = {
+            storeName: 'Tên cửa hàng',
+            storeAddress: 'Địa chỉ cửa hàng',
+            storePhone: 'Số điện thoại'
+        };
+        
+        const missingFields = [];
+        for (const [key, label] of Object.entries(requiredFields)) {
+            if (!storeSettings[key] || storeSettings[key].trim() === '') {
+                missingFields.push(label);
+            }
+        }
+        
+        if (missingFields.length > 0) {
+            showSettingsModal(missingFields);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Hiển thị modal yêu cầu cài đặt
+    function showSettingsModal(missingFields = []) {
+        const modal = document.createElement('div');
+        modal.className = 'settings-modal';
+        modal.innerHTML = `
+            <div class="settings-modal-content">
+                <h2>Cài đặt thông tin cửa hàng</h2>
+                <p>Vui lòng cập nhật thông tin cửa hàng trước khi sử dụng hệ thống.</p>
+                ${missingFields.length > 0 ? `
+                    <p>Các thông tin cần bổ sung:</p>
+                    <ul>
+                        ${missingFields.map(field => `<li>${field}</li>`).join('')}
+                    </ul>
+                ` : ''}
+                <div class="settings-modal-actions">
+                    <a href="settings.html" class="btn-primary">Đi đến trang cài đặt</a>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Thêm CSS cho modal
+        const style = document.createElement('style');
+        style.textContent = `
+            .settings-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+            
+            .settings-modal-content {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                max-width: 500px;
+                width: 90%;
+                text-align: center;
+            }
+            
+            .settings-modal-content h2 {
+                margin-bottom: 15px;
+                color: #333;
+            }
+            
+            .settings-modal-content p {
+                margin-bottom: 15px;
+                color: #666;
+            }
+            
+            .settings-modal-content ul {
+                text-align: left;
+                margin: 15px 0;
+                padding-left: 20px;
+                color: #f5222d;
+            }
+            
+            .settings-modal-actions {
+                margin-top: 20px;
+            }
+            
+            .settings-modal-actions .btn-primary {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #1890ff;
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            
+            .settings-modal-actions .btn-primary:hover {
+                background-color: #40a9ff;
+            }
+        `;
+        
+        document.head.appendChild(style);
     }
     
     // Khởi tạo ứng dụng với bố cục mới
     function initialize() {
         // Tải thông tin cửa hàng đã lưu
         loadStoreSettings();
+        
+        // Kiểm tra thông tin cài đặt bắt buộc
+        if (!checkRequiredSettings()) {
+            return; // Dừng khởi tạo nếu chưa có thông tin cài đặt
+        }
         
         // Ẩn phần QR ban đầu
         if (qrPaymentSection) {
@@ -935,4 +1124,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Bắt đầu ứng dụng
     initialize();
+
+    // Thêm event listeners cho các trường giảm giá
+    document.querySelectorAll('input[name="discount-type"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const unit = document.querySelector('#discount-unit');
+            unit.textContent = radio.value === 'percentage' ? '%' : 'VND';
+            // Reset giá trị giảm giá về 0 khi thay đổi hình thức
+            document.querySelector('#discount-value').value = '0';
+            calculateTotal();
+        });
+    });
+
+    document.querySelector('#discount-value').addEventListener('input', calculateTotal);
+
+    // Cập nhật event listeners cho các trường số lượng và giá
+    document.querySelectorAll('.quantity, .price').forEach(input => {
+        input.addEventListener('input', calculateTotal);
+    });
 }); 

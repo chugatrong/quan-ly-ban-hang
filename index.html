@@ -130,6 +130,22 @@
                     </div>
                     
                     <div class="bill-summary">
+                        <div class="discount-section">
+                            <div class="discount-type">
+                                <label>
+                                    <input type="radio" name="discount-type" value="percentage" checked> Giảm theo %
+                                </label>
+                                <label>
+                                    <input type="radio" name="discount-type" value="amount"> Giảm theo số tiền
+                                </label>
+                            </div>
+                            <div class="discount-input">
+                                <input type="number" id="discount-value" min="0" step="0.01" placeholder="Nhập giá trị giảm">
+                                <span id="discount-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="subtotal">Tiền hàng: <span id="subtotal-amount">0</span>đ</div>
+                        <div class="discount-amount">Giảm giá: <span id="discount-amount">0</span>đ</div>
                         <div class="total">Tổng tiền: <span id="total-amount">0</span>đ</div>
                     </div>
                     
