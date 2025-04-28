@@ -984,15 +984,31 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.innerHTML = `
             <div class="settings-modal-content">
                 <h2>Cài đặt thông tin cửa hàng</h2>
-                <p>Vui lòng cập nhật thông tin cửa hàng trước khi sử dụng hệ thống.</p>
-                ${missingFields.length > 0 ? `
-                    <p>Các thông tin cần bổ sung:</p>
-                    <ul>
-                        ${missingFields.map(field => `<li>${field}</li>`).join('')}
-                    </ul>
-                ` : ''}
+                <p>Vui lòng nhập thông tin cửa hàng để tiếp tục sử dụng hệ thống.</p>
+                
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="modal-store-name">Tên cửa hàng:</label>
+                        <input type="text" id="modal-store-name" placeholder="Nhập tên cửa hàng" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-store-phone">Số điện thoại:</label>
+                        <input type="text" id="modal-store-phone" placeholder="Nhập số điện thoại" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-store-address">Địa chỉ:</label>
+                        <input type="text" id="modal-store-address" placeholder="Nhập địa chỉ cửa hàng" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-excel-file">Tải lên file Excel món ăn:</label>
+                        <input type="file" id="modal-excel-file" accept=".xlsx,.xls" required>
+                        <p class="help-text">File Excel cần có 2 cột: Tên món và Giá</p>
+                    </div>
+                </div>
+                
                 <div class="settings-modal-actions">
-                    <a href="settings.html" class="btn-primary">Đi đến trang cài đặt</a>
+                    <button id="modal-save-settings" class="btn-primary">Lưu và tiếp tục</button>
                 </div>
             </div>
         `;
@@ -1021,7 +1037,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 border-radius: 8px;
                 max-width: 500px;
                 width: 90%;
-                text-align: center;
+                max-height: 90vh;
+                overflow-y: auto;
             }
             
             .settings-modal-content h2 {
@@ -1034,33 +1051,107 @@ document.addEventListener('DOMContentLoaded', function() {
                 color: #666;
             }
             
-            .settings-modal-content ul {
-                text-align: left;
-                margin: 15px 0;
-                padding-left: 20px;
-                color: #f5222d;
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            
+            .form-group input {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            
+            .help-text {
+                font-size: 12px;
+                color: #666;
+                margin-top: 5px;
             }
             
             .settings-modal-actions {
                 margin-top: 20px;
+                text-align: center;
             }
             
-            .settings-modal-actions .btn-primary {
-                display: inline-block;
+            .btn-primary {
                 padding: 10px 20px;
                 background-color: #1890ff;
                 color: white;
-                text-decoration: none;
+                border: none;
                 border-radius: 4px;
+                cursor: pointer;
                 font-weight: bold;
             }
             
-            .settings-modal-actions .btn-primary:hover {
+            .btn-primary:hover {
                 background-color: #40a9ff;
             }
         `;
         
         document.head.appendChild(style);
+        
+        // Xử lý sự kiện lưu cài đặt
+        const saveButton = document.getElementById('modal-save-settings');
+        saveButton.addEventListener('click', function() {
+            const storeName = document.getElementById('modal-store-name').value.trim();
+            const storePhone = document.getElementById('modal-store-phone').value.trim();
+            const storeAddress = document.getElementById('modal-store-address').value.trim();
+            const excelFile = document.getElementById('modal-excel-file').files[0];
+            
+            if (!storeName || !storePhone || !storeAddress || !excelFile) {
+                alert('Vui lòng điền đầy đủ thông tin và tải lên file Excel!');
+                return;
+            }
+            
+            // Lưu thông tin cửa hàng
+            const settings = {
+                storeName: storeName,
+                storePhone: storePhone,
+                storeAddress: storeAddress
+            };
+            localStorage.setItem(STORE_SETTINGS_KEY, JSON.stringify(settings));
+            
+            // Xử lý file Excel
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Lấy sheet đầu tiên
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Chuyển đổi thành JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                
+                // Giả sử dữ liệu Excel có định dạng: Tên món, Giá
+                menuItems = jsonData.map(item => {
+                    const name = item['Tên món'] || item['Tên'] || item['Món'] || Object.values(item)[0];
+                    const price = item['Giá'] || item['Đơn giá'] || item['Giá tiền'] || Object.values(item)[1];
+                    
+                    return {
+                        name: name,
+                        price: parseFloat(price) || 0
+                    };
+                });
+                
+                // Lưu danh sách món
+                saveMenuItems();
+                
+                // Đóng modal và cập nhật giao diện
+                document.body.removeChild(modal);
+                document.head.removeChild(style);
+                renderMenuItems();
+                alert('Đã lưu thông tin thành công!');
+            };
+            reader.readAsArrayBuffer(excelFile);
+        });
     }
     
     // Khởi tạo ứng dụng với bố cục mới
