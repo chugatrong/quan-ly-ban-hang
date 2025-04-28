@@ -614,21 +614,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Tạo mã QR nếu cần thiết
         let qrCodeHTML = '';
-        if (showQrInBillCheckbox && showQrInBillCheckbox.checked && storeSettings && storeSettings.bankAccount) {
-            qrCodeHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; margin: 10px 0; padding: 10px; background-color: #f9f9f9; border: 1px dashed #ddd; font-size: 10px; text-align: center;">
-                    <div style="flex: 0 0 60px; text-align: center; margin-right: 10px;">
+        if (showQrInBillCheckbox && showQrInBillCheckbox.checked) {
+            if (storeSettings && storeSettings.bankName && storeSettings.bankAccount && storeSettings.accountName) {
+                qrCodeHTML = `
+                    <div style="text-align: center; margin: 20px 0;">
                         <img src="https://img.vietqr.io/image/${storeSettings.bankName}-${storeSettings.bankAccount}-qr_only.jpg?amount=${total}&addInfo=Thanh toan hoa don ${invoiceCode}&accountName=${encodeURIComponent(storeSettings.accountName || '')}" 
-                            alt="QR thanh toán" style="width: 60px; height: 60px; display: block; margin: 0 auto;">
+                            alt="QR thanh toán" style="width: 30mm; height: 30mm; display: block; margin: 0 auto;"> 
                     </div>
-                    <div style="flex: 1; text-align: left; line-height: 1.4;">
-                        <p style="margin: 2px 0"><b>NH:</b> ${storeSettings.bankName}</p>
-                        <p style="margin: 2px 0"><b>STK:</b> ${storeSettings.bankAccount}</p>
-                        <p style="margin: 2px 0"><b>ND:</b> HD${invoiceCode}</p>
-                        <p style="margin: 2px 0"><b>Số tiền:</b> ${formatCurrency(total)}</p>
+                `;
+            } else {
+                qrCodeHTML = `
+                    <div style="text-align: center; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; margin: 10px 0; font-size: 12px;">
+                        <p style="margin: 0; color: #856404;">
+                            <b>Lưu ý:</b> Không thể hiển thị mã QR thanh toán vì chưa cấu hình thông tin ngân hàng.<br>
+                            Vui lòng vào phần Cài đặt > Thông tin thanh toán để cập nhật thông tin ngân hàng.
+                        </p>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
         
         // Tạo thông tin liên hệ
@@ -794,8 +797,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="icon-head text-center mb-2">
                             </div>
                             <div class="text-center info">
-                                <h2><b>${storeName}</b></h2>
-                                <p>${storeAddress}</p> 
+                                <h2 class="pb-0" style=" margin: 0; "><b>${storeName}</b></h2>
+                                <p class="pt-1" style=" margin: 0; padding: 0;">${storeAddress}</p> 
                             </div> 
                             <h1  class="text-center" >PHIẾU TÍNH TIỀN</h1>
                             <div class="invoice-header">
@@ -846,6 +849,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Xóa dòng "Vui lòng giữ lại phiếu sau khi thanh toán và khi đổi hàng."
         const cleanedTemplate = invoiceTemplate.replace(/<p>\*\*\s*Vui lòng giữ lại phiếu.*?<\/p>/g, '');
         
+        console.log(cleanedTemplate);
+
         // Sử dụng iframe cho việc in ấn
         const printFrame = document.getElementById('print-frame');
         const printFrameDoc = printFrame.contentDocument || printFrame.contentWindow.document;
