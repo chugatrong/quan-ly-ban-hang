@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let billItems = [];
     let isMenuCollapsed = false;
     let storeSettings = null;
+    let currentTableNumber = '';
 
     // ==== DEFAULT STORE INFO ====
     const DEFAULT_STORE_SETTINGS = {
@@ -413,6 +414,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Thêm món vào hóa đơn
     function addToBill(item) {
+        // Nếu chưa có số bàn thì yêu cầu nhập trước
+        if (!currentTableNumber) {
+            showTableNumberModal();
+            return;
+        }
         // Kiểm tra xem món đã có trong hóa đơn chưa
         const existingItemIndex = billItems.findIndex(billItem => billItem.name === item.name);
         
@@ -790,7 +796,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         justify-content: space-between; 
                         padding: 5px 0;
                     }
-                    
+                    .invoice-header .date-table {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 16px;
+                        align-items: center;
+                    }
+                    .invoice-header .table-number-print {
+                        font-size: 15px;
+                        font-weight: bold;
+                        color: #d2691e;
+                    }
                     @media print {
                         @page {
                             size: 80mm auto;
@@ -821,9 +837,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <b>Số hóa đơn:</b>
                                     <div style="font-size: 13px; font-weight: bold;">${invoiceCode}</div>
                                 </div>
-                                <div class="text-right">
-                                    <b>Ngày:</b> ${dateString}
-                                    <div style="font-size: 12px;">${timeString}</div>
+                                <div class="date-table text-right">
+                                    <div>
+                                        <b>Ngày:</b> ${dateString} ${timeString} ${currentTableNumber ? `<div class="table-number-print"><b>Số bàn:</b> ${currentTableNumber}</div>` : ''}
+                                    </div>
+                                   
                                 </div>
                             </div>
                             
@@ -897,9 +915,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Hỏi người dùng có muốn xóa hóa đơn sau khi in không
                 setTimeout(function() {
-                    if (confirm('Bạn có muốn xóa hóa đơn sau khi in không?')) {
-                        clearBill();
-                    }
+                   // Tải lại trang
+                   window.location.reload();
                 }, 1000);
             } catch (e) {
                 console.error("Lỗi khi in:", e);
@@ -943,9 +960,13 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTotal();
         customerNameInput.value = '';
         tableNumberInput.value = '';
+        currentTableNumber = '';
         // Reset giá trị giảm giá về 0
         document.querySelector('#discount-value').value = '0';
         calculateTotal();
+        // Hiện lại modal nhập số bàn
+        showTableNumberModal();
+        updateTableNumberDisplay();
     }
     
     // Sự kiện xóa hóa đơn
@@ -1021,6 +1042,142 @@ document.addEventListener('DOMContentLoaded', function() {
         renderMenuItems();
     }
     
+    // Hiển thị modal nhập số bàn
+    function showTableNumberModal() {
+        // Nếu đã có modal thì không tạo lại
+        if (document.getElementById('table-number-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'table-number-modal';
+        modal.className = 'settings-modal';
+        modal.innerHTML = `
+            <div class="settings-modal-content">
+                <h2>Nhập số bàn</h2>
+                <div class="form-group">
+                    <label for="modal-table-number">Số bàn:</label>
+                    <input type="text" id="modal-table-number" placeholder="Nhập số bàn" required autofocus>
+                </div>
+                <div class="settings-modal-actions">
+                    <button id="modal-save-table-number" class="btn-primary">Xác nhận</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        // Đảm bảo CSS modal luôn có trên trang
+        if (!document.getElementById('modal-style')) {
+            const style = document.createElement('style');
+            style.id = 'modal-style';
+            style.textContent = `
+                .settings-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                }
+                .settings-modal-content {
+                    background-color: white;
+                    padding: 30px;
+                    border-radius: 8px;
+                    max-width: 500px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+                }
+                .settings-modal-content h2 {
+                    margin-bottom: 15px;
+                    color: #333;
+                }
+                .settings-modal-content p {
+                    margin-bottom: 15px;
+                    color: #666;
+                }
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                }
+                .form-group input {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-size: 16px;
+                }
+                .settings-modal-actions {
+                    margin-top: 20px;
+                    text-align: center;
+                }
+                .btn-primary {
+                    padding: 10px 20px;
+                    background-color: #1890ff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+                .btn-primary:hover {
+                    background-color: #40a9ff;
+                }
+                #current-table-number-display {
+                      display: block;
+                        font-size: 40px;
+                        font-weight: bold;
+                        color: #d2691e; 
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        // Focus input
+        setTimeout(() => {
+            document.getElementById('modal-table-number').focus();
+        }, 100);
+        // Sự kiện xác nhận
+        document.getElementById('modal-save-table-number').addEventListener('click', function() {
+            const value = document.getElementById('modal-table-number').value.trim();
+            if (!value) {
+                alert('Vui lòng nhập số bàn!');
+                return;
+            }
+            currentTableNumber = value;
+            if (tableNumberInput) tableNumberInput.value = value;
+            updateTableNumberDisplay();
+            document.body.removeChild(modal);
+        });
+        // Cho phép nhấn Enter để xác nhận
+        document.getElementById('modal-table-number').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('modal-save-table-number').click();
+            }
+        });
+    }
+
+    // Hiển thị số bàn trên màn hình chính
+    function updateTableNumberDisplay() {
+        let display = document.getElementById('current-table-number-display');
+        if (!display) {
+            // Thêm vào đầu bill-container nếu có, hoặc body nếu không
+            const billContainer = document.getElementById('bill-container') || document.body;
+            display = document.createElement('div');
+            display.id = 'current-table-number-display';
+            if (billContainer.firstChild) {
+                billContainer.insertBefore(display, billContainer.firstChild);
+            } else {
+                billContainer.appendChild(display);
+            }
+        }
+        display.textContent = currentTableNumber ? `Số bàn: ${currentTableNumber}` : '';
+    }
     
     // Khởi tạo ứng dụng với bố cục mới
     function initialize() {
@@ -1068,6 +1225,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 rightColumn.appendChild(billContainer);
             }
         }
+        // Hiện modal nhập số bàn khi khởi tạo
+        showTableNumberModal();
+        updateTableNumberDisplay();
     }
     
     // Bắt đầu ứng dụng
