@@ -39,14 +39,73 @@ document.addEventListener('DOMContentLoaded', function() {
     let isMenuCollapsed = false;
     let storeSettings = null;
     let currentTableNumber = '';
+    let tableOrderStartTime = null; // Thời gian bắt đầu order cho bàn hiện tại
+    let tableOrderData = {}; // Lưu trữ dữ liệu order theo bàn
+    let allTableOrders = {}; // Lưu trữ tất cả order theo bàn
+    let totalTables = 20; // Số lượng bàn mặc định
 
     // ==== DEFAULT STORE INFO ====
     const DEFAULT_STORE_SETTINGS = {
         storeName: 'Chú Gà Trống Tây Ninh',
         storeAddress: '486 Đường Điện Biên Phủ, Phường Ninh Phúc Ninh Thạnh, TP Tây Ninh',
-        storePhone: '0976 768 787.'
+        storePhone: '0976 768 787.',
+        totalTables: 20
     };
 
+    // Tải cài đặt số lượng bàn
+    function loadTableSettings() {
+        const savedSettings = localStorage.getItem(STORE_SETTINGS_KEY);
+        if (savedSettings) {
+            try {
+                const settings = JSON.parse(savedSettings);
+                totalTables = settings.totalTables || 20;
+            } catch (e) {
+                console.error('Lỗi khi tải cài đặt bàn:', e);
+            }
+        }
+    }
+
+    // Tải tất cả order theo bàn
+    function loadAllTableOrders() {
+        const savedOrders = localStorage.getItem('allTableOrders');
+        if (savedOrders) {
+            try {
+                allTableOrders = JSON.parse(savedOrders);
+            } catch (e) {
+                console.error('Lỗi khi tải order theo bàn:', e);
+                allTableOrders = {};
+            }
+        }
+    }
+
+    // Lưu tất cả order theo bàn
+    function saveAllTableOrders() {
+        localStorage.setItem('allTableOrders', JSON.stringify(allTableOrders));
+    }
+
+    // Lưu thời gian order theo bàn
+    function saveTableOrderTime(tableNumber, startTime) {
+        const tableData = JSON.parse(localStorage.getItem('tableOrderData') || '{}');
+        tableData[tableNumber] = {
+            startTime: startTime,
+            items: []
+        };
+        localStorage.setItem('tableOrderData', JSON.stringify(tableData));
+    }
+
+    // Lấy thời gian order theo bàn
+    function getTableOrderTime(tableNumber) {
+        const tableData = JSON.parse(localStorage.getItem('tableOrderData') || '{}');
+        return tableData[tableNumber] || null;
+    }
+
+    // Xóa dữ liệu order của bàn sau khi chốt bill
+    function clearTableOrderData(tableNumber) {
+        const tableData = JSON.parse(localStorage.getItem('tableOrderData') || '{}');
+        delete tableData[tableNumber];
+        localStorage.setItem('tableOrderData', JSON.stringify(tableData));
+    }
+    
     // On first load, set default store info if not present
     function ensureDefaultStoreSettings() {
         const savedSettings = localStorage.getItem(STORE_SETTINGS_KEY);
@@ -414,10 +473,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Thêm món vào hóa đơn
     function addToBill(item) {
-        // Nếu chưa có số bàn thì yêu cầu nhập trước
+        // Nếu chưa có số bàn thì tự động chọn bàn trống đầu tiên
         if (!currentTableNumber) {
-            showTableNumberModal();
-            return;
+            autoSelectEmptyTable();
+        }
+        // Nếu đây là món đầu tiên của bàn, lưu thời gian bắt đầu order
+        if (billItems.length === 0) {
+            tableOrderStartTime = new Date();
+            saveTableOrderTime(currentTableNumber, tableOrderStartTime.toISOString());
         }
         // Kiểm tra xem món đã có trong hóa đơn chưa
         const existingItemIndex = billItems.findIndex(billItem => billItem.name === item.name);
@@ -436,8 +499,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Lưu order hiện tại vào bàn
+        saveCurrentTableOrder();
         renderBillItems();
         calculateTotal();
+        updateTableList();
     }
     
     // Hiển thị các món trong hóa đơn
@@ -500,8 +566,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (billItems[index].quantity > 1) {
             billItems[index].quantity -= 1;
             billItems[index].total = billItems[index].price * billItems[index].quantity;
+            saveCurrentTableOrder();
             renderBillItems();
             calculateTotal();
+            updateTableList();
         } else {
             removeItem(index);
         }
@@ -511,15 +579,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function increaseQuantity(index) {
         billItems[index].quantity += 1;
         billItems[index].total = billItems[index].price * billItems[index].quantity;
+        saveCurrentTableOrder();
         renderBillItems();
         calculateTotal();
+        updateTableList();
     }
     
     // Xóa món khỏi hóa đơn
     function removeItem(index) {
         billItems.splice(index, 1);
+        saveCurrentTableOrder();
         renderBillItems();
         calculateTotal();
+        updateTableList();
     }
     
     // Cập nhật tổng tiền
@@ -570,6 +642,16 @@ document.addEventListener('DOMContentLoaded', function() {
         printInvoice();
     });
     
+    // Thêm hàm gửi dữ liệu hóa đơn lên Google Sheets
+    function saveInvoiceToGoogleSheet(invoiceData) {
+        fetch('https://script.google.com/macros/s/AKfycbzpvbol6yaJo1BFwSi4QK-0TbHypr54XVLnd3Csxvm-sFKggVuSFqvra7iwtz2Jf4J8/exec', {
+            method: 'POST',
+            body: JSON.stringify(invoiceData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
     // Hàm in hóa đơn
     function printInvoice() {
         if (billItems.length === 0) {
@@ -913,11 +995,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Khôi phục tiêu đề
                 document.title = oldTitle;
                 
-                // Hỏi người dùng có muốn xóa hóa đơn sau khi in không
-                setTimeout(function() {
-                   // Tải lại trang
-                   window.location.reload();
-                }, 1000);
+                // Gửi dữ liệu hóa đơn lên Google Sheets
+                try {
+                    const now = new Date();
+                    const orderStartTime = tableOrderStartTime || now;
+                    const orderDuration = Math.round((now - orderStartTime) / 1000 / 60); // Thời gian order tính bằng phút
+                    const invoiceData = {
+                        date: dateString,
+                        time: timeString,
+                        year: now.getFullYear(),
+                        month: now.getMonth() + 1,
+                        tableNumber: currentTableNumber,
+                        total: total,
+                        orderStartTime: orderStartTime.toISOString(),
+                        orderEndTime: now.toISOString(),
+                        orderDuration: orderDuration, // Thời gian order (phút)
+                        items: billItems
+                    };
+                    saveInvoiceToGoogleSheet(invoiceData);
+                                    // Xóa dữ liệu order của bàn sau khi chốt bill
+                clearTableOrderData(currentTableNumber);
+                // Xóa khỏi allTableOrders
+                delete allTableOrders[currentTableNumber];
+                saveAllTableOrders();
+            } catch (err) { console.error('Lỗi gửi dữ liệu Google Sheets:', err); }
+            // Cập nhật hiển thị và chọn bàn trống đầu tiên
+            setTimeout(function() {
+                updateTableList();
+                autoSelectEmptyTable();
+            }, 1000);
             } catch (e) {
                 console.error("Lỗi khi in:", e);
                 // Phương án dự phòng: sử dụng cách cũ
@@ -950,23 +1056,62 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             document.querySelector('#discount-value').value = '0';
             calculateTotal();
+            // Cập nhật hiển thị danh sách bàn
+            updateTableList();
         }, 1000);
     }
     
     // Hàm xóa hóa đơn
     function clearBill() {
+        // Xác nhận trước khi xóa
+        if (billItems.length > 0) {
+            const confirmMessage = currentTableNumber ? 
+                `Bạn có chắc muốn xóa hóa đơn của bàn ${currentTableNumber}?` : 
+                'Bạn có chắc muốn xóa hóa đơn hiện tại?';
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+        }
+        
+        // Xóa order của bàn hiện tại khỏi allTableOrders
+        if (currentTableNumber && allTableOrders[currentTableNumber]) {
+            delete allTableOrders[currentTableNumber];
+            saveAllTableOrders();
+        }
+        
+        // Reset dữ liệu hóa đơn
         billItems = [];
         renderBillItems();
         calculateTotal();
-        customerNameInput.value = '';
-        tableNumberInput.value = '';
-        currentTableNumber = '';
+        
+        // Reset các trường input
+        if (customerNameInput) customerNameInput.value = '';
+        if (tableNumberInput) tableNumberInput.value = '';
+        
+        // Reset thời gian order
+        tableOrderStartTime = null;
+        
         // Reset giá trị giảm giá về 0
         document.querySelector('#discount-value').value = '0';
         calculateTotal();
-        // Hiện lại modal nhập số bàn
-        showTableNumberModal();
+        
+        // Xóa số bàn hiện tại
+        currentTableNumber = '';
+        
+        // Tự động chọn bàn trống đầu tiên
+        autoSelectEmptyTable();
+        
+        // Cập nhật hiển thị
         updateTableNumberDisplay();
+        updateTableList();
+        
+        // Thông báo xóa thành công
+        if (billItems.length === 0) {
+            setTimeout(() => {
+                alert('Đã xóa hóa đơn thành công!');
+            }, 100);
+        }
     }
     
     // Sự kiện xóa hóa đơn
@@ -1042,26 +1187,172 @@ document.addEventListener('DOMContentLoaded', function() {
         renderMenuItems();
     }
     
-    // Hiển thị modal nhập số bàn
-    function showTableNumberModal() {
-        // Nếu đã có modal thì không tạo lại
-        if (document.getElementById('table-number-modal')) return;
+    // Hiển thị modal chọn bàn
+    function showTableSelectionModal() {
+        if (document.getElementById('table-selection-modal')) return;
+        
         const modal = document.createElement('div');
-        modal.id = 'table-number-modal';
+        modal.id = 'table-selection-modal';
         modal.className = 'settings-modal';
+        
+        // Tạo danh sách bàn
+        let tableButtons = '';
+        for (let i = 1; i <= totalTables; i++) {
+            const hasOrder = allTableOrders[i] && allTableOrders[i].items && allTableOrders[i].items.length > 0;
+            const orderCount = hasOrder ? allTableOrders[i].items.length : 0;
+            const orderTotal = hasOrder ? allTableOrders[i].items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
+            
+            tableButtons += `
+                <div class="table-button ${hasOrder ? 'has-order' : ''}" data-table="${i}">
+                    <div class="table-number">Bàn ${i}</div>
+                    ${hasOrder ? `
+                        <div class="table-info">
+                            <div class="order-count">${orderCount} món</div>
+                            <div class="order-total">${formatCurrency(orderTotal)}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
         modal.innerHTML = `
             <div class="settings-modal-content">
-                <h2>Nhập số bàn</h2>
-                <div class="form-group">
-                    <label for="modal-table-number">Số bàn:</label>
-                    <input type="text" id="modal-table-number" placeholder="Nhập số bàn" required autofocus>
+                <h2>Chọn bàn</h2>
+                <div class="table-grid">
+                    ${tableButtons}
                 </div>
                 <div class="settings-modal-actions">
-                    <button id="modal-save-table-number" class="btn-primary">Xác nhận</button>
+                    <button id="modal-cancel-table" class="btn-secondary">Hủy</button>
                 </div>
             </div>
         `;
+        
         document.body.appendChild(modal);
+        
+        // Thêm CSS cho modal chọn bàn
+        if (!document.getElementById('table-selection-style')) {
+            const style = document.createElement('style');
+            style.id = 'table-selection-style';
+            style.textContent = `
+                .table-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                    gap: 10px;
+                    margin: 20px 0;
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .table-button {
+                    padding: 15px;
+                    border: 2px solid #ddd;
+                    border-radius: 8px;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    background: white;
+                }
+                .table-button:hover {
+                    border-color: #1890ff;
+                    background: #f0f8ff;
+                }
+                .table-button.has-order {
+                    border-color: #52c41a;
+                    background: #f6ffed;
+                }
+                .table-button.has-order:hover {
+                    border-color: #389e0d;
+                    background: #e6f7ff;
+                }
+                .table-number {
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-bottom: 5px;
+                }
+                .table-info {
+                    font-size: 12px;
+                    color: #666;
+                }
+                .order-count {
+                    color: #52c41a;
+                    font-weight: bold;
+                }
+                .order-total {
+                    color: #1890ff;
+                    font-weight: bold;
+                }
+                .btn-secondary {
+                    padding: 10px 20px;
+                    background-color: #f5f5f5;
+                    color: #333;
+                    border: 1px solid #d9d9d9;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-left: 10px;
+                }
+                .btn-secondary:hover {
+                    background-color: #e6e6e6;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Sự kiện chọn bàn
+        document.querySelectorAll('.table-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tableNumber = this.getAttribute('data-table');
+                selectTable(tableNumber);
+                document.body.removeChild(modal);
+            });
+        });
+        
+        // Sự kiện hủy
+        document.getElementById('modal-cancel-table').addEventListener('click', function() {
+            document.body.removeChild(modal);
+        });
+    }
+
+    // Chọn bàn và tải order của bàn đó
+    function selectTable(tableNumber) {
+        currentTableNumber = tableNumber;
+        if (tableNumberInput) tableNumberInput.value = tableNumber;
+        
+        // Tải order của bàn này
+        if (allTableOrders[tableNumber]) {
+            billItems = [...allTableOrders[tableNumber].items];
+            tableOrderStartTime = new Date(allTableOrders[tableNumber].startTime);
+        } else {
+            billItems = [];
+            tableOrderStartTime = null;
+        }
+        
+        renderBillItems();
+        calculateTotal();
+        updateTableNumberDisplay();
+        updateTableList();
+    }
+
+    // Lưu order hiện tại vào bàn
+    function saveCurrentTableOrder() {
+        if (currentTableNumber && billItems.length > 0) {
+            allTableOrders[currentTableNumber] = {
+                startTime: tableOrderStartTime ? tableOrderStartTime.toISOString() : new Date().toISOString(),
+                items: [...billItems]
+            };
+            saveAllTableOrders();
+        } else if (currentTableNumber && billItems.length === 0) {
+            // Xóa order nếu bàn không còn món nào
+            delete allTableOrders[currentTableNumber];
+            saveAllTableOrders();
+        }
+    }
+    
+    // Hiển thị modal nhập số bàn
+    function showTableNumberModal() {
+        // Thay thế bằng modal chọn bàn
+        showTableSelectionModal();
+        return;
         // Đảm bảo CSS modal luôn có trên trang
         if (!document.getElementById('modal-style')) {
             const style = document.createElement('style');
@@ -1151,6 +1442,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             currentTableNumber = value;
             if (tableNumberInput) tableNumberInput.value = value;
+            // Kiểm tra xem bàn này đã có order trước đó chưa
+            const existingOrder = getTableOrderTime(currentTableNumber);
+            if (existingOrder) {
+                tableOrderStartTime = new Date(existingOrder.startTime);
+            } else {
+                tableOrderStartTime = null;
+            }
             updateTableNumberDisplay();
             document.body.removeChild(modal);
         });
@@ -1176,7 +1474,130 @@ document.addEventListener('DOMContentLoaded', function() {
                 billContainer.appendChild(display);
             }
         }
-        display.textContent = currentTableNumber ? `Số bàn: ${currentTableNumber}` : '';
+        if (currentTableNumber) {
+            const hasOrder = allTableOrders[currentTableNumber] && allTableOrders[currentTableNumber].items && allTableOrders[currentTableNumber].items.length > 0;
+            const orderCount = hasOrder ? allTableOrders[currentTableNumber].items.length : 0;
+            const orderTotal = hasOrder ? allTableOrders[currentTableNumber].items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
+            
+            display.innerHTML = `
+                <div class="table-display">
+                    <div class="table-number">Bàn ${currentTableNumber}</div>
+                    ${hasOrder ? `
+                        <div class="table-order-info">
+                            <span class="order-count">${orderCount} món</span>
+                            <span class="order-total">${formatCurrency(orderTotal)}</span>
+                        </div>
+                    ` : '<div class="table-order-info"><span class="order-count">Trống</span></div>'}
+                </div>
+            `;
+        } else {
+            display.textContent = '';
+        }
+    }
+    
+    // Hiển thị danh sách bàn
+    function renderTableList() {
+        const tableListGrid = document.getElementById('table-list-grid');
+        if (!tableListGrid) return;
+        
+        tableListGrid.innerHTML = '';
+        
+        for (let i = 1; i <= totalTables; i++) {
+            const hasOrder = allTableOrders[i] && allTableOrders[i].items && allTableOrders[i].items.length > 0;
+            const orderCount = hasOrder ? allTableOrders[i].items.length : 0;
+            const orderTotal = hasOrder ? allTableOrders[i].items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
+            const isCurrentTable = currentTableNumber === i.toString();
+            
+            const tableItem = document.createElement('div');
+            tableItem.className = `table-list-item ${hasOrder ? 'has-order' : ''} ${isCurrentTable ? 'current-table' : ''}`;
+            tableItem.setAttribute('data-table', i);
+            
+            tableItem.innerHTML = `
+                <div class="table-list-number">Bàn ${i}</div>
+                ${hasOrder ? `
+                    <div class="table-list-info">
+                        <div class="table-list-count">${orderCount} món</div>
+                        <div class="table-list-total">${formatCurrency(orderTotal)}</div>
+                        <button class="table-clear-btn" data-table="${i}" title="Xóa hóa đơn bàn ${i}">🗑️</button>
+                    </div>
+                ` : `
+                    <div class="table-list-empty">Trống</div>
+                `}
+            `;
+            
+            tableItem.addEventListener('click', function(e) {
+                // Không chọn bàn nếu click vào nút xóa
+                if (e.target.classList.contains('table-clear-btn')) {
+                    e.stopPropagation();
+                    clearTableBill(i.toString());
+                    return;
+                }
+                selectTable(i.toString());
+            });
+            
+            tableListGrid.appendChild(tableItem);
+        }
+    }
+    
+    // Tự động chọn bàn trống đầu tiên
+    function autoSelectEmptyTable() {
+        for (let i = 1; i <= totalTables; i++) {
+            const hasOrder = allTableOrders[i] && allTableOrders[i].items && allTableOrders[i].items.length > 0;
+            if (!hasOrder) {
+                selectTable(i.toString());
+                return;
+            }
+        }
+        // Nếu không có bàn trống, chọn bàn đầu tiên hoặc để trống
+        if (totalTables > 0) {
+            selectTable('1');
+        } else {
+            currentTableNumber = '';
+            updateTableNumberDisplay();
+        }
+    }
+    
+    // Cập nhật hiển thị danh sách bàn
+    function updateTableList() {
+        renderTableList();
+    }
+    
+    // Xóa hóa đơn của bàn cụ thể
+    function clearTableBill(tableNumber) {
+        if (!tableNumber) return;
+        
+        const confirmMessage = `Bạn có chắc muốn xóa hóa đơn của bàn ${tableNumber}?`;
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+        
+        // Xóa order của bàn khỏi allTableOrders
+        if (allTableOrders[tableNumber]) {
+            delete allTableOrders[tableNumber];
+            saveAllTableOrders();
+        }
+        
+        // Xóa dữ liệu order của bàn
+        clearTableOrderData(tableNumber);
+        
+        // Nếu đang chọn bàn này, reset hóa đơn hiện tại
+        if (currentTableNumber === tableNumber) {
+            billItems = [];
+            renderBillItems();
+            calculateTotal();
+            tableOrderStartTime = null;
+            currentTableNumber = '';
+            autoSelectEmptyTable();
+        }
+        
+        // Cập nhật hiển thị
+        updateTableNumberDisplay();
+        updateTableList();
+        
+        // Thông báo xóa thành công
+        setTimeout(() => {
+            alert(`Đã xóa hóa đơn bàn ${tableNumber} thành công!`);
+        }, 100);
     }
     
     // Khởi tạo ứng dụng với bố cục mới
@@ -1185,7 +1606,10 @@ document.addEventListener('DOMContentLoaded', function() {
         ensureDefaultStoreSettings();
         // Tải thông tin cửa hàng đã lưu
         loadStoreSettings();
-        // Không còn kiểm tra thông tin cài đặt bắt buộc, không hiện popup nữa
+        // Tải cài đặt bàn
+        loadTableSettings();
+        // Tải tất cả order theo bàn
+        loadAllTableOrders();
         // Ẩn phần QR ban đầu
         if (qrPaymentSection) {
             qrPaymentSection.style.display = 'none';
@@ -1210,24 +1634,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isDataLoaded) {
             createMenuItems();
         }
-        // Đảm bảo bố cục 2 cột hiển thị đúng
-        const leftColumn = document.querySelector('.left-column');
-        const rightColumn = document.querySelector('.right-column');
-        if (leftColumn && rightColumn) {
-            // Di chuyển danh sách món ăn vào cột trái nếu cần
-            const menuContainer = document.getElementById('menu-container');
-            if (menuContainer && !leftColumn.contains(menuContainer)) {
-                leftColumn.appendChild(menuContainer);
-            }
-            // Di chuyển thông tin hóa đơn vào cột phải nếu cần
-            const billContainer = document.getElementById('bill-container');
-            if (billContainer && !rightColumn.contains(billContainer)) {
-                rightColumn.appendChild(billContainer);
-            }
+        // Hiển thị danh sách bàn
+        renderTableList();
+        // Tự động chọn bàn trống đầu tiên
+        autoSelectEmptyTable();
+        // Thêm sự kiện cho nút refresh
+        const refreshButton = document.getElementById('refresh-tables');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', function() {
+                updateTableList();
+            });
         }
-        // Hiện modal nhập số bàn khi khởi tạo
-        showTableNumberModal();
-        updateTableNumberDisplay();
     }
     
     // Bắt đầu ứng dụng

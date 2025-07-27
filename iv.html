@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <title>Phiếu Tính Tiền</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+                      rel="stylesheet">
+                <style>
+                    body {
+                        width: 80mm;
+                        margin: auto;
+                        padding: 5px;
+                        font-size: 14px;
+                        font-family: "Roboto", sans-serif;
+                        font-optical-sizing: auto;
+                        font-weight: 600;
+                        font-style: normal;
+                        font-variation-settings: "wdth" 100;
+                    }
+                    
+                    .text-left.info p {
+                        margin: 1px 0;
+                    }
+                    
+                    .invoice-bar {
+                        border-top: dashed 1px #000;
+                        padding-top: 10px;
+                    }
+                    
+                    .invoice-bar p {
+                        margin: 2px 0;
+                        text-align: center;
+                    }
+                    
+                    h2 {
+                        font-size: 19px !important;
+                        font-weight: bold;
+                        text-align: center;
+                        margin: 10px 0;
+                    }
+                    
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 10px;
+                        table-layout: fixed;
+                        word-wrap: break-word;
+                    }
+                    
+                    th {
+                        background-color: #ffffff;
+                        text-align: center;
+                        padding: 10px 0;
+                        margin-bottom: 5px;
+                        font-weight: bold;
+                        border-bottom: solid 1px;
+                    }
+                    
+                    td {
+                        padding: 3px;
+                    }
+                    
+                    .text-right {
+                        text-align: right !important;
+                    }
+                    
+                    .text-center {
+                        text-align: center !important;
+                    }
+                    
+                    .table-total td {
+                        font-weight: bold;
+                        padding: 2px;
+                    }
+                    
+                    .table-total tr:first-child td {
+                        padding-top: 10px;
+                    }
+                    
+                    .border-bottom {
+                        border-bottom: 1px dashed #7c7c7c !important;
+                    }
+                    
+                    .invoice-header {
+                        display: flex; 
+                        justify-content: space-between; 
+                        padding: 5px 0;
+                    }
+                    .invoice-header .date-table {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 16px;
+                        align-items: center;
+                    }
+                    .invoice-header .table-number-print {
+                        font-size: 15px;
+                        font-weight: bold;
+                        color: #d2691e;
+                    }
+                    @media print {
+                        @page {
+                            size: 80mm auto;
+                            margin: 0;
+                        }
+                        
+                        body {
+                            width: 80mm;
+                            margin: 0;
+                            padding: 0;
+                        }
+                    }
+                </style>
+            </head>
+            <body style="max-width: 80mm; margin: auto; padding: 10px;">
+                <div class="main-wrapper">
+                    <div class="page-wrapper">
+                        <div class="modal-body" id="invoice">
+                            <div class="icon-head text-center mb-2">
+                            </div>
+                            <div class="text-center info">
+                                <h2 class="pb-0" style=" margin: 0; "><b>Chú Gà Trống Tây Ninh</b></h2>
+                                <p class="pt-1" style=" margin: 0; padding: 0;">486 Đường Điện Biên Phủ, Phường Ninh Phúc Ninh Thạnh, TP Tây Ninh</p> 
+                            </div> 
+                            <h1  class="text-center" >PHIẾU TÍNH TIỀN</h1>
+                            <div class="invoice-header">
+                                <div>
+                                    <b>Số hóa đơn:</b>
+                                    <div style="font-size: 13px; font-weight: bold;">HD825810372</div>
+                                </div>
+                                <div class="date-table text-right">
+                                    <div>
+                                        <b>Ngày:</b> 20/7/2025
+                                        <div style="font-size: 12px;">21:47</div>
+                                    </div>
+                                    <div class="table-number-print">Số bàn: 5</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Bảng Sản Phẩm -->
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Sản phẩm</th>
+                                        <th class="text-right">Đơn giá</th>
+                                        <th class="text-center">SL</th>
+                                        <th class="text-right">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            1. Tôm Sốt Thái
+                        </b>
+                    </td>
+                </tr>
+                <tr class="border-bottom">
+                    <td></td>
+                    <td class="text-right">170.000 ₫</td>
+                    <td class="text-center" style="width: 15%;">x 1</td>
+                    <td class="text-right">170.000 ₫</td>
+                </tr>
+            
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            2. Ốc Hương Sốt Trứng Muối
+                        </b>
+                    </td>
+                </tr>
+                <tr class="border-bottom">
+                    <td></td>
+                    <td class="text-right">220.000 ₫</td>
+                    <td class="text-center" style="width: 15%;">x 1</td>
+                    <td class="text-right">220.000 ₫</td>
+                </tr>
+            
+                <tr>
+                    <td colspan="4">
+                        <b>
+                            3. Tôm Sốt Trứng Muối
+                        </b>
+                    </td>
+                </tr>
+                <tr class="border-bottom">
+                    <td></td>
+                    <td class="text-right">170.000 ₫</td>
+                    <td class="text-center" style="width: 15%;">x 1</td>
+                    <td class="text-right">170.000 ₫</td>
+                </tr>
+            
+                                </tbody>
+                            </table>
+                            
+                            <!-- Bảng Tổng Kết -->
+                            
+                <table class="table-total">
+                    <tr>
+                        <td><b>Tiền hàng</b></td>
+                        <td class="text-right">560.000 ₫</td>
+                    </tr>
+                    <tr>
+                        <td><b>Hình thức thanh toán</b></td>
+                        <td class="text-right">Tiền mặt</td>
+                    </tr>
+                </table>
+            
+                            
+                            <!-- QR thanh toán nếu đã chọn hiển thị QR -->
+                            
+                            
+                            <!-- Lời Nhắn -->
+                            <div class="invoice-bar">
+                                <p><b>Trân trọng cảm ơn quý khách!</b></p>
+                                <p>Hẹn gặp lại!</p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>

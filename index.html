@@ -43,21 +43,27 @@
             }
         }
         
-        /* Styles mới cho layout 2 cột */
+        /* Styles mới cho layout 3 cột */
         .main-layout {
             display: flex;
-            flex-wrap: wrap;
             gap: 20px;
+            height: calc(100vh - 120px);
         }
         
         .left-column {
-            flex: 1;
-            min-width: 300px;
+            flex: 0.8;
+            min-width: 250px;
+            max-width: 300px;
+        }
+        
+        .middle-column {
+            flex: 1.2;
+            min-width: 400px;
         }
         
         .right-column {
             flex: 1;
-            min-width: 300px;
+            min-width: 350px;
         }
         
         .bottom-section {
@@ -65,6 +71,123 @@
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
+        }
+        
+        .container {
+            width: 100% !important;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* CSS cho danh sách bàn */
+        .table-list-container {
+            height: 100%;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        
+        .table-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .table-list-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .btn-refresh {
+            padding: 5px 10px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .table-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+        }
+        
+        .table-list-item {
+            padding: 12px 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+        }
+        
+        .table-list-item:hover {
+            border-color: #1890ff;
+            background: #f0f8ff;
+            transform: translateY(-2px);
+        }
+        
+        .table-list-item.has-order {
+            border-color: #52c41a;
+            background: #f6ffed;
+        }
+        
+        .table-list-item.current-table {
+            border-color: #d2691e;
+            background: #fff7e6;
+            transform: scale(1.05);
+        }
+        
+        .table-list-number {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .table-list-info {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .table-list-count {
+            color: #52c41a;
+            font-weight: bold;
+            font-size: 10px;
+            background: rgba(82, 196, 26, 0.1);
+            padding: 2px 4px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        
+        .table-list-total {
+            color: #1890ff;
+            font-weight: bold;
+            font-size: 10px;
+            background: rgba(24, 144, 255, 0.1);
+            padding: 2px 4px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .table-list-empty {
+            font-size: 10px;
+            color: #999;
+            font-style: italic;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -76,8 +199,21 @@
         </div>
         
         <div class="main-layout">
-            <!-- Cột bên trái - Danh sách món ăn -->
+            <!-- Cột bên trái - Danh sách bàn -->
             <div class="left-column">
+                <div class="table-list-container">
+                    <div class="table-list-header">
+                        <h3>Danh sách bàn</h3>
+                        <button class="btn-refresh" id="refresh-tables">⟳</button>
+                    </div>
+                    <div class="table-list-grid" id="table-list-grid">
+                        <!-- Danh sách bàn sẽ được tạo động bằng JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cột giữa - Danh sách món ăn -->
+            <div class="middle-column">
                 <div class="menu-section">
                     <div class="menu-header">
                         <h2>Danh sách món ăn</h2>
@@ -154,21 +290,21 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Phần dưới cùng - Cài đặt và nhập liệu -->
-            <div class="bottom-section">
-                <div class="file-section">
-                    <label for="excel-file">Chọn file Excel chứa danh sách món ăn:</label>
-                    <input type="file" id="excel-file" accept=".xlsx, .xls">
-                    <div class="excel-guide">
-                        <a href="menu-mau.html" target="_blank">Xem hướng dẫn định dạng file Excel</a> | 
-                        <a href="menu-mau.xlsx.html" target="_blank">Tải xuống file Excel mẫu</a>
-                    </div>
-                    <div class="save-data-option">
-                        <input type="checkbox" id="save-menu-data" checked>
-                        <label for="save-menu-data">Lưu danh sách món cho lần sau</label>
-                        <button id="clear-saved-data" class="small-button">Xóa dữ liệu đã lưu</button>
-                    </div>
+        </div>
+        
+        <!-- Phần dưới cùng - Cài đặt và nhập liệu -->
+        <div class="bottom-section">
+            <div class="file-section">
+                <label for="excel-file">Chọn file Excel chứa danh sách món ăn:</label>
+                <input type="file" id="excel-file" accept=".xlsx, .xls">
+                <div class="excel-guide">
+                    <a href="menu-mau.html" target="_blank">Xem hướng dẫn định dạng file Excel</a> | 
+                    <a href="menu-mau.xlsx.html" target="_blank">Tải xuống file Excel mẫu</a>
+                </div>
+                <div class="save-data-option">
+                    <input type="checkbox" id="save-menu-data" checked>
+                    <label for="save-menu-data">Lưu danh sách món cho lần sau</label>
+                    <button id="clear-saved-data" class="small-button">Xóa dữ liệu đã lưu</button>
                 </div>
             </div>
         </div>
