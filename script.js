@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Các phần tử DOM
-    const excelFileInput = document.getElementById('excel-file');
     const menuItemsContainer = document.getElementById('menu-items');
     const billItemsBody = document.getElementById('bill-items-body');
     const totalAmountElement = document.getElementById('total-amount');
@@ -19,8 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuSearchInput = document.getElementById('menu-search');
     const searchResultsContainer = document.getElementById('search-results');
     const toggleMenuButton = document.getElementById('toggle-menu');
-    const saveMenuDataCheckbox = document.getElementById('save-menu-data');
-    const clearSavedDataButton = document.getElementById('clear-saved-data');
     const qrPaymentSection = document.getElementById('qr-payment-section');
     const showQrButton = document.getElementById('show-qr');
     const qrModal = document.getElementById('qr-modal');
@@ -31,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Các khóa localStorage
     const STORE_SETTINGS_KEY = 'storeSettings';
     const MENU_DATA_KEY = 'menuItems';
-    const SAVE_MENU_DATA_KEY = 'saveMenuData';
     
     // Danh sách món ăn và hóa đơn
     let menuItems = [];
@@ -328,29 +324,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Xử lý lưu/tải dữ liệu từ localStorage
-    if (saveMenuDataCheckbox) {
-        // Kiểm tra trạng thái đã lưu
-        const shouldSaveMenu = localStorage.getItem(SAVE_MENU_DATA_KEY);
-        saveMenuDataCheckbox.checked = shouldSaveMenu === null ? true : shouldSaveMenu === 'true';
-        
-        saveMenuDataCheckbox.addEventListener('change', function() {
-            localStorage.setItem(SAVE_MENU_DATA_KEY, this.checked);
-        });
-    }
-    
-    if (clearSavedDataButton) {
-        clearSavedDataButton.addEventListener('click', function() {
-            localStorage.removeItem(MENU_DATA_KEY);
-            Toastify({
-                text: "Đã xóa dữ liệu danh sách món ăn đã lưu!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "#4CAF50",
-                stopOnFocus: true
-            }).showToast();
-        });
+    // Tự động lưu dữ liệu menu vào localStorage
+    function autoSaveMenuItems() {
+        localStorage.setItem(MENU_DATA_KEY, JSON.stringify(menuItems));
     }
     
     // Tải dữ liệu từ localStorage nếu có
@@ -370,9 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Lưu danh sách món vào localStorage
     function saveMenuItems() {
-        if (saveMenuDataCheckbox && saveMenuDataCheckbox.checked) {
-            localStorage.setItem(MENU_DATA_KEY, JSON.stringify(menuItems));
-        }
+        autoSaveMenuItems();
     }
     
     // Hàm tìm kiếm món ăn
@@ -440,40 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Sự kiện khi chọn file Excel
-    excelFileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            
-            // Lấy sheet đầu tiên
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            
-            // Chuyển đổi thành JSON
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-            
-            // Giả sử dữ liệu Excel có định dạng: Tên món, Giá
-            menuItems = jsonData.map(item => {
-                // Kiểm tra các trường dữ liệu
-                const name = item['Tên món'] || item['Tên'] || item['Món'] || Object.values(item)[0];
-                const price = item['Giá'] || item['Đơn giá'] || item['Giá tiền'] || Object.values(item)[1];
-                
-                return {
-                    name: name,
-                    price: parseFloat(price) || 0
-                };
-            });
-            
-            renderMenuItems();
-            saveMenuItems(); // Lưu danh sách món mới
-        };
-        reader.readAsArrayBuffer(file);
-    });
+
     
     // Hiển thị danh sách món ăn
     function renderMenuItems() {
@@ -511,12 +452,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const existingItemIndex = billItems.findIndex(billItem => billItem.name === item.name);
         
         if (existingItemIndex !== -1) {
-            // Nếu món đã có trong hóa đơn, tăng số lượng lên 1
-            billItems[existingItemIndex].quantity += 1;
-            billItems[existingItemIndex].total = billItems[existingItemIndex].price * billItems[existingItemIndex].quantity;
+            // Nếu món đã có trong hóa đơn, tăng số lượng lên 1 và di chuyển lên đầu
+            const existingItem = billItems.splice(existingItemIndex, 1)[0];
+            existingItem.quantity += 1;
+            existingItem.total = existingItem.price * existingItem.quantity;
+            billItems.unshift(existingItem); // Thêm vào đầu danh sách
         } else {
-            // Nếu món chưa có trong hóa đơn, thêm mới
-            billItems.push({
+            // Nếu món chưa có trong hóa đơn, thêm mới vào đầu
+            billItems.unshift({
                 name: item.name,
                 price: item.price,
                 quantity: 1,
@@ -529,6 +472,29 @@ document.addEventListener('DOMContentLoaded', function() {
         renderBillItems();
         calculateTotal();
         updateTableList();
+        
+        // Scroll đến đầu danh sách bill items
+        const billItemsContainer = document.querySelector('.bill-items tbody');
+        if (billItemsContainer) {
+            billItemsContainer.scrollTop = 0;
+        }
+        
+        // Highlight món vừa thêm/cập nhật
+        highlightBillItem(0);
+    }
+    
+    // Hàm highlight món trong bill
+    function highlightBillItem(index) {
+        setTimeout(() => {
+            const rows = billItemsBody.querySelectorAll('tr');
+            if (rows[index]) {
+                rows[index].classList.add('bill-item-flash');
+                // Tự động xóa class sau khi animation hoàn thành
+                setTimeout(() => {
+                    rows[index].classList.remove('bill-item-flash');
+                }, 1500);
+            }
+        }, 100); // Delay nhỏ để đảm bảo DOM đã được render
     }
     
     // Hiển thị các món trong hóa đơn
@@ -595,19 +561,49 @@ document.addEventListener('DOMContentLoaded', function() {
             renderBillItems();
             calculateTotal();
             updateTableList();
+            
+            // Highlight món vừa giảm số lượng với hiệu ứng pulse
+            highlightBillItemPulse(index);
         } else {
             removeItem(index);
         }
     }
     
+    // Hàm highlight với hiệu ứng pulse cho giảm số lượng
+    function highlightBillItemPulse(index) {
+        setTimeout(() => {
+            const rows = billItemsBody.querySelectorAll('tr');
+            if (rows[index]) {
+                rows[index].classList.add('bill-item-pulse');
+                // Tự động xóa class sau khi animation hoàn thành
+                setTimeout(() => {
+                    rows[index].classList.remove('bill-item-pulse');
+                }, 1000);
+            }
+        }, 100);
+    }
+    
     // Tăng số lượng món trong hóa đơn
     function increaseQuantity(index) {
-        billItems[index].quantity += 1;
-        billItems[index].total = billItems[index].price * billItems[index].quantity;
+        // Lấy món cần tăng số lượng và di chuyển lên đầu
+        const item = billItems.splice(index, 1)[0];
+        item.quantity += 1;
+        item.total = item.price * item.quantity;
+        billItems.unshift(item); // Thêm vào đầu danh sách
+        
         saveCurrentTableOrder();
         renderBillItems();
         calculateTotal();
         updateTableList();
+        
+        // Scroll đến đầu danh sách bill items
+        const billItemsContainer = document.querySelector('.bill-items tbody');
+        if (billItemsContainer) {
+            billItemsContainer.scrollTop = 0;
+        }
+        
+        // Highlight món vừa tăng số lượng
+        highlightBillItem(0);
     }
     
     // Xóa món khỏi hóa đơn
@@ -669,14 +665,264 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Thêm hàm gửi dữ liệu hóa đơn lên Google Sheets
     function saveInvoiceToGoogleSheet(invoiceData) {
+        // Lưu báo cáo local trước
+        saveLocalReport(invoiceData);
+        
+        // Thử gửi lên Google Sheets
         fetch('https://script.google.com/macros/s/AKfycbzpvbol6yaJo1BFwSi4QK-0TbHypr54XVLnd3Csxvm-sFKggVuSFqvra7iwtz2Jf4J8/exec', {
             method: 'POST',
             body: JSON.stringify(invoiceData),
             headers: {
                 'Content-Type': 'application/json'
             }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Gửi báo cáo lên Google Sheets thành công');
+                Toastify({
+                    text: "Báo cáo đã được gửi thành công!",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#4CAF50",
+                    stopOnFocus: true
+                }).showToast();
+            } else {
+                console.error('Lỗi khi gửi báo cáo:', response.status);
+                showReportError('Không thể kết nối đến Google Sheets');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi gửi báo cáo:', error);
+            showReportError('Lỗi kết nối mạng hoặc Google Sheets');
         });
     }
+
+    // Hàm lưu báo cáo local
+    function saveLocalReport(invoiceData) {
+        try {
+            const reports = JSON.parse(localStorage.getItem('localReports') || '[]');
+            const reportEntry = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                ...invoiceData
+            };
+            reports.push(reportEntry);
+            
+            // Giữ tối đa 1000 báo cáo gần nhất
+            if (reports.length > 1000) {
+                reports.splice(0, reports.length - 1000);
+            }
+            
+            localStorage.setItem('localReports', JSON.stringify(reports));
+            console.log('Đã lưu báo cáo local');
+        } catch (error) {
+            console.error('Lỗi khi lưu báo cáo local:', error);
+        }
+    }
+
+    // Hàm hiển thị lỗi báo cáo
+    function showReportError(message) {
+        Toastify({
+            text: `Báo cáo: ${message}. Dữ liệu đã được lưu local.`,
+            duration: 5000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#f44336",
+            stopOnFocus: true
+        }).showToast();
+    }
+
+    // Hàm xuất báo cáo local
+    function exportLocalReports() {
+        try {
+            const reports = JSON.parse(localStorage.getItem('localReports') || '[]');
+            if (reports.length === 0) {
+                            Swal.fire({
+                icon: 'info',
+                title: 'ℹ️ Thông báo',
+                text: 'Chưa có báo cáo nào được lưu',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'swal2-popup-unicode'
+                }
+            });
+                return;
+            }
+
+            // Tạo dữ liệu CSV với BOM để hỗ trợ Unicode
+            const BOM = '\uFEFF';
+            let csvContent = BOM + 'Ngày,Giờ,Bàn,Tổng tiền,Thời gian order (phút),Số món\n';
+            reports.forEach(report => {
+                const date = new Date(report.timestamp).toLocaleDateString('vi-VN');
+                const time = new Date(report.timestamp).toLocaleTimeString('vi-VN');
+                const tableNumber = report.tableNumber || 'N/A';
+                const total = report.total || 0;
+                const duration = report.orderDuration || 0;
+                const itemCount = report.items ? report.items.length : 0;
+                
+                csvContent += `${date},${time},${tableNumber},${total},${duration},${itemCount}\n`;
+            });
+
+            // Tạo file download với encoding UTF-8
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `bao_cao_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Xuất báo cáo thành công',
+                text: `Đã xuất ${reports.length.toLocaleString('vi-VN')} báo cáo`,
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'swal2-popup-unicode'
+                }
+            });
+        } catch (error) {
+            console.error('Lỗi khi xuất báo cáo:', error);
+            Swal.fire({
+                icon: 'error',
+                title: '❌ Lỗi',
+                text: 'Không thể xuất báo cáo',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'swal2-popup-unicode'
+                }
+            });
+        }
+    }
+
+    // Hàm xem thống kê báo cáo
+    function showReportStatistics() {
+        try {
+            const reports = JSON.parse(localStorage.getItem('localReports') || '[]');
+            if (reports.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: '📊 Thống kê báo cáo',
+                    text: 'Chưa có báo cáo nào được lưu',
+                    confirmButtonText: 'Đóng',
+                    customClass: {
+                        popup: 'swal2-popup-unicode'
+                    }
+                });
+                return;
+            }
+
+            // Tính toán thống kê
+            const totalRevenue = reports.reduce((sum, report) => sum + (report.total || 0), 0);
+            const totalOrders = reports.length;
+            const avgOrderValue = totalRevenue / totalOrders;
+            const totalDuration = reports.reduce((sum, report) => sum + (report.orderDuration || 0), 0);
+            const avgDuration = totalDuration / totalOrders;
+
+            // Thống kê theo ngày
+            const today = new Date().toDateString();
+            const todayReports = reports.filter(report => 
+                new Date(report.timestamp).toDateString() === today
+            );
+            const todayRevenue = todayReports.reduce((sum, report) => sum + (report.total || 0), 0);
+            const todayOrders = todayReports.length;
+
+            // Thống kê theo tháng
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthReports = reports.filter(report => {
+                const reportDate = new Date(report.timestamp);
+                return reportDate.getMonth() === currentMonth && reportDate.getFullYear() === currentYear;
+            });
+            const monthRevenue = monthReports.reduce((sum, report) => sum + (report.total || 0), 0);
+            const monthOrders = monthReports.length;
+
+            Swal.fire({
+                title: 'Thống kê báo cáo',
+                html: `
+                    <div style="text-align: left; font-size: 14px; font-family: 'Roboto', sans-serif;">
+                        <h4 style="color: #1890ff; margin-bottom: 10px;">📊 Tổng quan:</h4>
+                        <p><strong>📋 Tổng số hóa đơn:</strong> ${totalOrders.toLocaleString('vi-VN')}</p>
+                        <p><strong>💰 Tổng doanh thu:</strong> ${formatCurrency(totalRevenue)}</p>
+                        <p><strong>📈 Giá trị trung bình:</strong> ${formatCurrency(avgOrderValue)}</p>
+                        <p><strong>⏱️ Thời gian order trung bình:</strong> ${avgDuration.toFixed(1)} phút</p>
+                        
+                        <h4 style="color: #52c41a; margin: 15px 0 10px 0;">📅 Hôm nay:</h4>
+                        <p><strong>📋 Số hóa đơn:</strong> ${todayOrders.toLocaleString('vi-VN')}</p>
+                        <p><strong>💰 Doanh thu:</strong> ${formatCurrency(todayRevenue)}</p>
+                        
+                        <h4 style="color: #722ed1; margin: 15px 0 10px 0;">📆 Tháng này:</h4>
+                        <p><strong>📋 Số hóa đơn:</strong> ${monthOrders.toLocaleString('vi-VN')}</p>
+                        <p><strong>💰 Doanh thu:</strong> ${formatCurrency(monthRevenue)}</p>
+                    </div>
+                `,
+                confirmButtonText: 'Đóng',
+                width: '500px',
+                customClass: {
+                    popup: 'swal2-popup-unicode'
+                }
+            });
+        } catch (error) {
+            console.error('Lỗi khi hiển thị thống kê:', error);
+            Swal.fire({
+                icon: 'error',
+                title: '❌ Lỗi',
+                text: 'Không thể hiển thị thống kê',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'swal2-popup-unicode'
+                }
+            });
+        }
+    }
+
+    // Hàm xóa báo cáo local
+    function clearLocalReports() {
+        Swal.fire({
+            title: '🗑️ Xác nhận xóa báo cáo',
+            text: 'Bạn có chắc muốn xóa tất cả báo cáo đã lưu?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            customClass: {
+                popup: 'swal2-popup-unicode'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                try {
+                    localStorage.removeItem('localReports');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Đã xóa',
+                        text: 'Tất cả báo cáo đã được xóa',
+                        confirmButtonText: 'Đóng',
+                        customClass: {
+                            popup: 'swal2-popup-unicode'
+                        }
+                    });
+                } catch (error) {
+                    console.error('Lỗi khi xóa báo cáo:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '❌ Lỗi',
+                        text: 'Không thể xóa báo cáo',
+                        confirmButtonText: 'Đóng',
+                        customClass: {
+                            popup: 'swal2-popup-unicode'
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     // Hàm in hóa đơn
     // Hiển thị popup xác nhận hóa đơn trước khi in
     function showBillConfirmation() {
@@ -731,7 +977,7 @@ document.addEventListener('DOMContentLoaded', function() {
             billItemsHTML += `
                 <div class="bill-item-row">
                     <div class="bill-item-name">${index + 1}. ${item.name}</div>
-                    <div class="bill-item-details">
+                    <div class="bill-item-price-row">
                         <span class="bill-item-price">${formatCurrency(item.price)}</span>
                         <span class="bill-item-quantity">x ${item.quantity}</span>
                         <span class="bill-item-total">${formatCurrency(item.total)}</span>
@@ -1739,7 +1985,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="table-list-info">
                         <div class="table-list-count">${orderCount} món</div>
                         <div class="table-list-total">${formatCurrency(orderTotal)}</div>
-                        <button class="table-clear-btn" data-table="${i}" title="Xóa hóa đơn bàn ${i}">🗑️</button>
+                        <button class="table-clear-btn" data-table="${i}" title="Xóa hóa đơn bàn ${i}">&#x26D4;</button>
                     </div>
                 ` : `
                     <div class="table-list-empty">Trống</div>
@@ -1910,4 +2156,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.quantity, .price').forEach(input => {
         input.addEventListener('input', calculateTotal);
     });
+
+    // Event listeners cho các nút báo cáo
+    document.getElementById('show-statistics').addEventListener('click', showReportStatistics);
+    document.getElementById('export-reports').addEventListener('click', exportLocalReports);
+    document.getElementById('clear-reports').addEventListener('click', clearLocalReports);
 }); 

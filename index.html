@@ -424,9 +424,7 @@
             <!-- Cột bên phải - Thông tin hóa đơn -->
             <div class="right-column">
                 <div id="bill-container" class="bill-section"> 
-                    <div class="bill-info">
-                    </div>
-     
+                   
                     <div class="bill-info payment-method">
                         <div class="qr-option">
                             <input type="checkbox" id="show-qr-in-bill">
@@ -482,19 +480,26 @@
             </div>
         </div>
         
-        <!-- Phần dưới cùng - Cài đặt và nhập liệu -->
+        <!-- Phần dưới cùng - Báo cáo và thống kê -->
         <div class="bottom-section">
-            <div class="file-section">
-                <label for="excel-file">Chọn file Excel chứa danh sách món ăn:</label>
-                <input type="file" id="excel-file" accept=".xlsx, .xls">
-                <div class="excel-guide">
-                    <a href="menu-mau.html" target="_blank">Xem hướng dẫn định dạng file Excel</a> | 
-                    <a href="menu-mau.xlsx.html" target="_blank">Tải xuống file Excel mẫu</a>
+            <div class="report-section">
+                <h3>📊 Báo cáo và thống kê</h3>
+                <div class="report-controls">
+                    <button id="show-statistics" class="btn-secondary">
+                        <span class="btn-icon">📈</span>
+                        Xem thống kê
+                    </button>
+                    <button id="export-reports" class="btn-secondary">
+                        <span class="btn-icon">📄</span>
+                        Xuất báo cáo CSV
+                    </button>
+                    <button id="clear-reports" class="btn-secondary">
+                        <span class="btn-icon">&#x26D4;</span>
+                        Xóa báo cáo
+                    </button>
                 </div>
-                <div class="save-data-option">
-                    <input type="checkbox" id="save-menu-data" checked>
-                    <label for="save-menu-data">Lưu danh sách món cho lần sau</label>
-                    <button id="clear-saved-data" class="small-button">Xóa dữ liệu đã lưu</button>
+                <div class="report-info">
+                    <small>💡 Báo cáo được lưu tự động khi in hóa đơn. Dữ liệu được lưu local và có thể xuất ra file CSV.</small>
                 </div>
             </div>
         </div>
