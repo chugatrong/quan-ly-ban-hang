@@ -225,12 +225,20 @@
         /* CSS cho popup xác nhận hóa đơn */
         .bill-confirmation-popup {
             font-family: 'Roboto', sans-serif;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+        
+        .bill-confirmation-popup .swal2-content {
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+            padding: 0 20px;
         }
         
         .bill-confirmation {
             text-align: left;
-            max-height: 500px;
             overflow-y: auto;
+            padding-right: 5px;
         }
         
         .bill-info {
@@ -330,6 +338,46 @@
         
         .bill-confirmation-content {
             text-align: left;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho popup */
+        .bill-confirmation-popup .swal2-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .bill-confirmation-popup .swal2-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .bill-confirmation-popup .swal2-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .bill-confirmation-popup .swal2-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Responsive cho màn hình nhỏ */
+        @media (max-width: 768px) {
+            .bill-confirmation-popup {
+                width: 95% !important;
+                margin: 10px auto;
+            }
+            
+            .bill-confirmation-popup .swal2-content {
+                max-height: calc(90vh - 100px);
+                padding: 0 10px;
+            }
+            
+            .bill-item-details {
+                min-width: 100px;
+            }
+            
+            .bill-item-name {
+                font-size: 13px;
+            }
         }
     </style>
 </head>

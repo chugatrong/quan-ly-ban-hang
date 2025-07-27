@@ -781,6 +781,7 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmButtonText: 'In hóa đơn',
             cancelButtonText: 'Hủy',
             width: '650px',
+            heightAuto: true,
             customClass: {
                 popup: 'bill-confirmation-popup',
                 content: 'bill-confirmation-content'
