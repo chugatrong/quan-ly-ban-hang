@@ -102,6 +102,88 @@
 @media (max-width: 80mm) {
     .invoice-print {
         width: 100%;
+        padding: 3px;
+    }
+    
+    .invoice-print h2 {
+        font-size: 16px;
+    }
+    
+    .invoice-print th,
+    .invoice-print td {
+        padding: 2px;
+        font-size: 12px;
+    }
+}
+
+/* Tối ưu cho màn hình nhỏ */
+@media (max-width: 480px) {
+    .invoice-print {
+        width: 100%;
+        padding: 2px;
+        font-size: 12px;
+    }
+    
+    .invoice-print h2 {
+        font-size: 14px;
+        margin: 8px 0;
+    }
+    
+    .invoice-print th,
+    .invoice-print td {
+        padding: 1px;
+        font-size: 11px;
+    }
+    
+    .invoice-print .info p {
+        margin: 0.5px 0;
+        line-height: 1.2;
+    }
+    
+    .invoice-print .invoice-bar {
+        padding-top: 8px;
+        margin-top: 8px;
+    }
+    
+    .invoice-print .invoice-bar p {
+        margin: 1px 0;
+    }
+}
+
+/* Tối ưu cho iPad và tablet */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .invoice-print {
+        width: 100%;
+        max-width: 80mm;
+        padding: 4px;
+    }
+    
+    .invoice-print h2 {
+        font-size: 18px;
+    }
+    
+    .invoice-print th,
+    .invoice-print td {
+        padding: 3px;
+        font-size: 13px;
+    }
+}
+
+/* Landscape orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .invoice-print {
+        width: 100%;
+        max-width: 100mm;
+    }
+    
+    .invoice-print h2 {
+        font-size: 17px;
+    }
+    
+    .invoice-print th,
+    .invoice-print td {
+        padding: 3px;
+        font-size: 13px;
     }
 }
 
@@ -152,5 +234,113 @@
     .invoice-print {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+    }
+    
+    /* Tối ưu cho in trên các thiết bị khác nhau */
+    @media (max-width: 80mm) {
+        .invoice-print {
+            width: 100% !important;
+            padding: 3px !important;
+        }
+        
+        .invoice-print h2 {
+            font-size: 16px !important;
+        }
+        
+        .invoice-print th,
+        .invoice-print td {
+            padding: 2px !important;
+            font-size: 12px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .invoice-print {
+            width: 100% !important;
+            padding: 2px !important;
+            font-size: 12px !important;
+        }
+        
+        .invoice-print h2 {
+            font-size: 14px !important;
+        }
+        
+        .invoice-print th,
+        .invoice-print td {
+            padding: 1px !important;
+            font-size: 11px !important;
+        }
+    }
+    
+    @media (min-width: 481px) and (max-width: 1024px) {
+        .invoice-print {
+            width: 100% !important;
+            max-width: 80mm !important;
+            padding: 4px !important;
+        }
+        
+        .invoice-print h2 {
+            font-size: 18px !important;
+        }
+        
+        .invoice-print th,
+        .invoice-print td {
+            padding: 3px !important;
+            font-size: 13px !important;
+        }
+    }
+}
+
+/* Cải thiện hiển thị trên màn hình nhỏ */
+@media (max-width: 768px) {
+    .invoice-print {
+        font-size: 13px;
+    }
+    
+    .invoice-print h2 {
+        font-size: 16px;
+    }
+    
+    .invoice-print th,
+    .invoice-print td {
+        padding: 2px;
+        font-size: 12px;
+    }
+    
+    .invoice-print .info p {
+        line-height: 1.2;
+    }
+}
+
+/* Tối ưu cho màn hình rất nhỏ */
+@media (max-width: 360px) {
+    .invoice-print {
+        font-size: 11px;
+        padding: 1px;
+    }
+    
+    .invoice-print h2 {
+        font-size: 13px;
+        margin: 6px 0;
+    }
+    
+    .invoice-print th,
+    .invoice-print td {
+        padding: 1px;
+        font-size: 10px;
+    }
+    
+    .invoice-print .info p {
+        margin: 0.5px 0;
+        line-height: 1.1;
+    }
+    
+    .invoice-print .invoice-bar {
+        padding-top: 6px;
+        margin-top: 6px;
+    }
+    
+    .invoice-print .invoice-bar p {
+        margin: 0.5px 0;
     }
 } 

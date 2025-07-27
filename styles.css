@@ -555,26 +555,51 @@ th {
 
 /* Responsive styling */
 @media (max-width: 768px) {
+    body {
+        padding: 5px;
+    }
+    
+    .container {
+        padding: 10px;
+        border-radius: 4px;
+    }
+    
     .header-with-action {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
     }
     
     .settings-button {
-        margin-top: 10px;
+        margin-top: 5px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    h1 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    
+    h2 {
+        font-size: 16px;
+        margin: 10px 0;
     }
     
     .bill-info {
         flex-direction: column;
+        gap: 15px;
     }
     
     .menu-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 8px;
     }
 
     .menu-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
     }
 
     .menu-controls {
@@ -582,21 +607,471 @@ th {
         margin-top: 10px;
         flex-direction: column;
         align-items: flex-start;
+        gap: 8px;
     }
 
     .search-container {
         width: 100%;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+    }
+    
+    #menu-search {
+        padding: 8px 10px;
+        font-size: 14px;
     }
 
     .main-layout {
         flex-direction: column;
         height: auto;
+        gap: 15px;
     }
     
     .left-column, .middle-column, .right-column {
         width: 100%;
         max-width: none;
+        min-width: auto;
+    }
+    
+    .menu-item {
+        min-height: 70px;
+        padding: 10px 6px;
+    }
+    
+    .menu-item h3 {
+        font-size: 13px;
+        line-height: 1.1;
+    }
+    
+    .menu-item p {
+        font-size: 12px;
+    }
+    
+    .form-group input, .form-group select {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .bill-items {
+        min-height: 200px;
+        max-height: 250px;
+    }
+    
+    .bill-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .bill-actions button {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+    
+    .table-display {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .table-number {
+        font-size: 20px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 6px;
+    }
+    
+    .table-list-item {
+        padding: 10px 6px;
+    }
+    
+    .table-list-number {
+        font-size: 13px;
+    }
+    
+    .table-list-info {
+        font-size: 9px;
+    }
+    
+    .discount-section {
+        padding: 8px;
+    }
+    
+    .discount-type {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .payment-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* iPad và tablet landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    .main-layout {
+        gap: 15px;
+    }
+    
+    .left-column {
+        flex: 0.7;
+        min-width: 200px;
+        max-width: 250px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .right-column {
+        flex: 0.8;
+        min-width: 250px;
+        max-width: 300px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+    }
+    
+    .menu-item {
+        min-height: 75px;
+        padding: 10px 8px;
+    }
+    
+    .menu-item h3 {
+        font-size: 13px;
+    }
+    
+    .menu-item p {
+        font-size: 12px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+    }
+    
+    .bill-items {
+        min-height: 300px;
+        max-height: 400px;
+    }
+    
+    .search-container {
+        width: 180px;
+    }
+}
+
+/* Màn hình nhỏ (điện thoại) */
+@media (max-width: 480px) {
+    body {
+        padding: 3px;
+    }
+    
+    .container {
+        padding: 8px;
+        border-radius: 3px;
+    }
+    
+    h1 {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+    
+    h2 {
+        font-size: 15px;
+        margin: 8px 0;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 6px;
+    }
+    
+    .menu-item {
+        min-height: 60px;
+        padding: 8px 4px;
+    }
+    
+    .menu-item h3 {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    
+    .menu-item p {
+        font-size: 11px;
+    }
+    
+    .form-group input, .form-group select {
+        padding: 8px;
+        font-size: 13px;
+    }
+    
+    .bill-items {
+        min-height: 180px;
+        max-height: 200px;
+    }
+    
+    .bill-actions button {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 4px;
+    }
+    
+    .table-list-item {
+        padding: 8px 4px;
+    }
+    
+    .table-list-number {
+        font-size: 12px;
+    }
+    
+    .table-list-info {
+        font-size: 8px;
+    }
+    
+    .table-display {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .table-number {
+        font-size: 18px;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    #menu-search {
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+    
+    .toggle-button {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+    
+    .settings-button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .btn-secondary {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .small-button {
+        padding: 2px 6px;
+        font-size: 0.7em;
+    }
+    
+    .delete-item {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+    
+    .quantity-control button {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .quantity-control span {
+        padding: 0 8px;
+        font-size: 13px;
+    }
+}
+
+/* Màn hình rất nhỏ (điện thoại nhỏ) */
+@media (max-width: 360px) {
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    }
+    
+    .menu-item {
+        min-height: 55px;
+        padding: 6px 3px;
+    }
+    
+    .menu-item h3 {
+        font-size: 11px;
+    }
+    
+    .menu-item p {
+        font-size: 10px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(55px, 1fr));
+    }
+    
+    .table-list-item {
+        padding: 6px 3px;
+    }
+    
+    .table-list-number {
+        font-size: 11px;
+    }
+    
+    .table-list-info {
+        font-size: 7px;
+    }
+    
+    .bill-actions button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    h1 {
+        font-size: 16px;
+    }
+    
+    h2 {
+        font-size: 14px;
+    }
+}
+
+/* Landscape orientation cho điện thoại */
+@media (max-width: 768px) and (orientation: landscape) {
+    .main-layout {
+        flex-direction: row;
+        height: calc(100vh - 100px);
+    }
+    
+    .left-column {
+        flex: 0.4;
+        min-width: 150px;
+        max-width: 200px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .right-column {
+        flex: 0.6;
+        min-width: 200px;
+        max-width: 250px;
+    }
+    
+    .menu-grid {
+        max-height: 200px;
+    }
+    
+    .bill-items {
+        min-height: 150px;
+        max-height: 200px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    }
+}
+
+/* Cải thiện touch targets cho mobile */
+@media (max-width: 768px) {
+    .menu-item {
+        min-height: 60px; /* Đảm bảo touch target đủ lớn */
+    }
+    
+    .menu-item button {
+        padding: 8px;
+        font-size: 14px;
+        min-height: 36px; /* Touch target tối thiểu */
+    }
+    
+    .toggle-button {
+        min-height: 36px;
+        min-width: 44px;
+    }
+    
+    .settings-button {
+        min-height: 36px;
+        min-width: 44px;
+    }
+    
+    .bill-actions button {
+        min-height: 44px;
+    }
+    
+    .table-list-item {
+        min-height: 60px;
+    }
+    
+    .quantity-control button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .delete-item {
+        min-width: 44px;
+        min-height: 36px;
+    }
+    
+    .table-clear-btn {
+        min-width: 44px;
+        min-height: 36px;
+        padding: 8px;
+    }
+}
+
+/* Tối ưu cho iPad Pro */
+@media (min-width: 1025px) and (max-width: 1366px) {
+    .container {
+        max-width: 1200px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+    }
+}
+
+/* Cải thiện hiệu suất cho mobile */
+@media (max-width: 768px) {
+    .menu-item {
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+    
+    .table-list-item {
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+    
+    /* Giảm animation cho mobile để tiết kiệm pin */
+    .menu-item:hover {
+        transform: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-list-item:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Tối ưu scroll cho mobile */
+    .menu-grid,
+    .bill-items,
+    .table-list-container {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
     }
 }
 
@@ -938,38 +1413,109 @@ th {
         min-height: 150px;
     }
 }
+
+/* Meta viewport cho mobile optimization */
 @media (max-width: 768px) {
-    .main-layout {
-        flex-direction: column;
-        height: auto;
+    /* Đảm bảo font size không bị zoom trên iOS */
+    input, select, textarea {
+        font-size: 16px !important;
     }
-    .left-column, .middle-column, .right-column {
-        max-width: none;
-        height: auto;
+    
+    /* Tối ưu cho touch scrolling */
+    .menu-grid,
+    .bill-items,
+    .table-list-container {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        overscroll-behavior: contain;
     }
-    .table-list-grid {
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    
+    /* Cải thiện performance */
+    .menu-item,
+    .table-list-item {
+        will-change: transform;
+        backface-visibility: hidden;
+        transform: translateZ(0);
     }
-    .menu-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        max-height: 300px;
+    
+    /* Giảm animation cho mobile */
+    .menu-item:hover,
+    .table-list-item:hover {
+        transform: none;
+        transition: none;
     }
-    .menu-item {
-        min-height: 70px;
-        padding: 8px 6px;
+    
+    /* Tối ưu cho landscape mode */
+    @media (orientation: landscape) {
+        .main-layout {
+            flex-direction: row;
+            height: calc(100vh - 80px);
+        }
+        
+        .left-column {
+            flex: 0.3;
+            min-width: 120px;
+            max-width: 150px;
+        }
+        
+        .middle-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .right-column {
+            flex: 0.4;
+            min-width: 150px;
+            max-width: 200px;
+        }
+        
+        .menu-grid {
+            max-height: 150px;
+        }
+        
+        .bill-items {
+            min-height: 120px;
+            max-height: 150px;
+        }
+        
+        .table-list-grid {
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        }
     }
-    .menu-item h3 {
-        font-size: 12px;
+}
+
+/* Tối ưu cho màn hình có độ phân giải cao */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .menu-item,
+    .table-list-item,
+    .settings-button,
+    .toggle-button {
+        border-width: 0.5px;
     }
-    .menu-item p {
-        font-size: 11px;
+    
+    .table-display {
+        border-width: 1px;
     }
-    .search-container {
-        width: 150px;
-        min-width: 120px;
+}
+
+/* Tối ưu cho dark mode (nếu được hỗ trợ) */
+@media (prefers-color-scheme: dark) {
+    /* Có thể thêm dark mode styles ở đây nếu cần */
+}
+
+/* Tối ưu cho reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .menu-item,
+    .table-list-item,
+    .settings-button,
+    .toggle-button,
+    .btn-refresh {
+        transition: none !important;
+        animation: none !important;
     }
-    .bill-items {
-        height: 350px;
-        overflow: scroll;
+    
+    .menu-item:hover,
+    .table-list-item:hover {
+        transform: none !important;
     }
 }
