@@ -169,7 +169,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     showQrInBillCheckbox.checked = true;
                 }
             } else if (this.checked && (!storeSettings || !storeSettings.bankAccount)) {
-                alert('Vui lòng thiết lập thông tin tài khoản ngân hàng trong phần Cài đặt để hiển thị mã QR.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thông báo',
+                    text: 'Vui lòng thiết lập thông tin tài khoản ngân hàng trong phần Cài đặt để hiển thị mã QR.',
+                    confirmButtonText: 'Đóng',
+                    confirmButtonColor: '#3085d6'
+                });
             }
         });
     }
@@ -179,7 +185,13 @@ document.addEventListener('DOMContentLoaded', function() {
         showQrInBillCheckbox.addEventListener('change', function() {
             // Nếu checkbox được bật nhưng không có thông tin ngân hàng
             if (this.checked && (!storeSettings || !storeSettings.bankAccount)) {
-                alert('Vui lòng thiết lập thông tin tài khoản ngân hàng trong phần Cài đặt để hiển thị mã QR.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thông báo',
+                    text: 'Vui lòng thiết lập thông tin tài khoản ngân hàng trong phần Cài đặt để hiển thị mã QR.',
+                    confirmButtonText: 'Đóng',
+                    confirmButtonColor: '#3085d6'
+                });
                 this.checked = false;
                 return;
             }
@@ -222,7 +234,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hiển thị QR code thanh toán
     function displayQrCode(amount) {
         if (!storeSettings || !storeSettings.bankAccount || !storeSettings.bankName) {
-            alert('Vui lòng thiết lập thông tin tài khoản ngân hàng trong phần Cài đặt.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo',
+                text: 'Vui lòng thiết lập thông tin tài khoản ngân hàng trong phần Cài đặt.',
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#3085d6'
+            });
             return;
         }
         
@@ -324,7 +342,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (clearSavedDataButton) {
         clearSavedDataButton.addEventListener('click', function() {
             localStorage.removeItem(MENU_DATA_KEY);
-            alert('Đã xóa dữ liệu danh sách món ăn đã lưu!');
+            Toastify({
+                text: "Đã xóa dữ liệu danh sách món ăn đã lưu!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#4CAF50",
+                stopOnFocus: true
+            }).showToast();
         });
     }
     
@@ -639,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sự kiện in hóa đơn
     printBillButton.addEventListener('click', function() {
-        printInvoice();
+        showBillConfirmation();
     });
     
     // Thêm hàm gửi dữ liệu hóa đơn lên Google Sheets
@@ -653,11 +678,144 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     // Hàm in hóa đơn
-    function printInvoice() {
+    // Hiển thị popup xác nhận hóa đơn trước khi in
+    function showBillConfirmation() {
         if (billItems.length === 0) {
-            alert('Chưa có món ăn nào trong hóa đơn');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo',
+                text: 'Chưa có món ăn nào trong hóa đơn',
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#3085d6'
+            });
             return;
         }
+
+        // Tính tổng tiền và giảm giá
+        let subtotal = 0;
+        billItems.forEach(item => {
+            subtotal += item.total;
+        });
+        
+        const discountType = document.querySelector('input[name="discount-type"]:checked').value;
+        const discountValue = parseFloat(document.querySelector('#discount-value').value) || 0;
+        let discountAmount = 0;
+        
+        if (discountType === 'percentage') {
+            discountAmount = subtotal * (discountValue / 100);
+        } else {
+            discountAmount = discountValue;
+        }
+        
+        const total = subtotal - discountAmount;
+
+        // Lấy thông tin thời gian
+        const now = new Date();
+        const dateString = now.toLocaleDateString('vi-VN');
+        const timeString = now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+
+        // Tạo HTML cho thông tin hóa đơn
+        let billInfoHTML = '';
+        if (currentTableNumber) {
+            billInfoHTML += `<div class="bill-info-row"><strong>Bàn:</strong> ${currentTableNumber}</div>`;
+        }
+        billInfoHTML += `
+            <div class="bill-info-row"><strong>Ngày:</strong> ${dateString}</div>
+            <div class="bill-info-row"><strong>Giờ:</strong> ${timeString}</div>
+            <div class="bill-info-row"><strong>Số món:</strong> ${billItems.length}</div>
+        `;
+
+        // Tạo HTML cho danh sách món ăn
+        let billItemsHTML = '';
+        billItems.forEach((item, index) => {
+            billItemsHTML += `
+                <div class="bill-item-row">
+                    <div class="bill-item-name">${index + 1}. ${item.name}</div>
+                    <div class="bill-item-details">
+                        <span class="bill-item-price">${formatCurrency(item.price)}</span>
+                        <span class="bill-item-quantity">x ${item.quantity}</span>
+                        <span class="bill-item-total">${formatCurrency(item.total)}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Tạo HTML cho thông tin tổng kết
+        let summaryHTML = '';
+        if (discountAmount > 0) {
+            summaryHTML = `
+                <div class="bill-summary-row">
+                    <span>Tiền hàng:</span>
+                    <span>${formatCurrency(subtotal)}</span>
+                </div>
+                <div class="bill-summary-row discount">
+                    <span>Giảm giá (${discountType === 'percentage' ? discountValue + '%' : formatCurrency(discountValue)}):</span>
+                    <span>-${formatCurrency(discountAmount)}</span>
+                </div>
+            `;
+        }
+
+        Swal.fire({
+            title: `Xác nhận hóa đơn${currentTableNumber ? ` - Bàn ${currentTableNumber}` : ''}`,
+            html: `
+                <div class="bill-confirmation">
+                    <div class="bill-info">
+                        ${billInfoHTML}
+                    </div>
+                    <div class="bill-items-list">
+                        ${billItemsHTML}
+                    </div>
+                    <div class="bill-summary">
+                        ${summaryHTML}
+                        <div class="bill-summary-row total">
+                            <span><strong>Tổng tiền:</strong></span>
+                            <span><strong>${formatCurrency(total)}</strong></span>
+                        </div>
+                    </div>
+                </div>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'In hóa đơn',
+            cancelButtonText: 'Hủy',
+            width: '650px',
+            customClass: {
+                popup: 'bill-confirmation-popup',
+                content: 'bill-confirmation-content'
+            },
+            allowEscapeKey: true,
+            allowOutsideClick: false,
+            showCloseButton: true,
+            focusConfirm: false,
+            preConfirm: () => {
+                return true;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Hiển thị loading
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    text: 'Vui lòng chờ trong giây lát',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Thực hiện in sau 500ms để hiển thị loading
+                setTimeout(() => {
+                    Swal.close();
+                    printInvoice();
+                }, 500);
+            }
+        });
+    }
+
+    function printInvoice() {
         
         const paymentMethod = 'Tiền mặt'; // Luôn hiển thị "Tiền mặt"
         
@@ -1058,6 +1216,16 @@ document.addEventListener('DOMContentLoaded', function() {
             calculateTotal();
             // Cập nhật hiển thị danh sách bàn
             updateTableList();
+            
+            // Hiển thị thông báo thành công
+            Toastify({
+                text: "In hóa đơn thành công!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#4CAF50",
+                stopOnFocus: true
+            }).showToast();
         }, 1000);
     }
     
@@ -1069,10 +1237,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 `Bạn có chắc muốn xóa hóa đơn của bàn ${currentTableNumber}?` : 
                 'Bạn có chắc muốn xóa hóa đơn hiện tại?';
             
-            if (!confirm(confirmMessage)) {
-                return;
-            }
+            Swal.fire({
+                title: 'Xác nhận xóa hóa đơn',
+                text: confirmMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performClearBill();
+                }
+            });
+            return;
         }
+        
+        // Nếu không có món ăn nào, xóa trực tiếp
+        performClearBill();
+    }
+    
+    // Hàm thực hiện xóa hóa đơn
+    function performClearBill() {
         
         // Xóa order của bàn hiện tại khỏi allTableOrders
         if (currentTableNumber && allTableOrders[currentTableNumber]) {
@@ -1109,14 +1296,41 @@ document.addEventListener('DOMContentLoaded', function() {
         // Thông báo xóa thành công
         if (billItems.length === 0) {
             setTimeout(() => {
-                alert('Đã xóa hóa đơn thành công!');
+                Toastify({
+                    text: "Đã xóa hóa đơn thành công!",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#4CAF50",
+                    stopOnFocus: true
+                }).showToast();
             }, 100);
         }
     }
     
     // Sự kiện xóa hóa đơn
     clearBillButton.addEventListener('click', function() {
-        clearBill();
+        // Hiển thị loading nếu có món ăn trong hóa đơn
+        if (billItems.length > 0) {
+            Swal.fire({
+                title: 'Đang xử lý...',
+                text: 'Vui lòng chờ trong giây lát',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Thực hiện xóa sau 300ms để hiển thị loading
+            setTimeout(() => {
+                Swal.close();
+                clearBill();
+            }, 300);
+        } else {
+            clearBill();
+        }
     });
     
     // Tạo một số món ăn mẫu để hiển thị khi không có file Excel
@@ -1437,7 +1651,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-save-table-number').addEventListener('click', function() {
             const value = document.getElementById('modal-table-number').value.trim();
             if (!value) {
-                alert('Vui lòng nhập số bàn!');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thông báo',
+                    text: 'Vui lòng nhập số bàn!',
+                    confirmButtonText: 'Đóng',
+                    confirmButtonColor: '#3085d6'
+                });
                 return;
             }
             currentTableNumber = value;
@@ -1567,9 +1787,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!tableNumber) return;
         
         const confirmMessage = `Bạn có chắc muốn xóa hóa đơn của bàn ${tableNumber}?`;
-        if (!confirm(confirmMessage)) {
-            return;
-        }
+        Swal.fire({
+            title: 'Xác nhận xóa hóa đơn',
+            text: confirmMessage,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                performClearTableBill(tableNumber);
+            }
+        });
+    }
+    
+    // Hàm thực hiện xóa hóa đơn bàn
+    function performClearTableBill(tableNumber) {
         
         // Xóa order của bàn khỏi allTableOrders
         if (allTableOrders[tableNumber]) {
@@ -1596,7 +1831,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Thông báo xóa thành công
         setTimeout(() => {
-            alert(`Đã xóa hóa đơn bàn ${tableNumber} thành công!`);
+            Toastify({
+                text: `Đã xóa hóa đơn bàn ${tableNumber} thành công!`,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#4CAF50",
+                stopOnFocus: true
+            }).showToast();
         }, 100);
     }
     

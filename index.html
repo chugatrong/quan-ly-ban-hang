@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Hệ Thống In Bill</title>
+    <title>Chú Gà Trống Tây Ninh</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="print-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
         /* Inline styles để đảm bảo in ấn đúng */
         @media print {
@@ -189,12 +192,151 @@
             font-style: italic;
             margin-top: 4px;
         }
+        
+        /* Tùy chỉnh SweetAlert2 */
+        .swal2-popup {
+            font-family: 'Roboto', sans-serif;
+            border-radius: 12px;
+        }
+        
+        .swal2-title {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .swal2-confirm {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .swal2-cancel {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        /* Tùy chỉnh Toastify */
+        .toastify {
+            font-family: 'Roboto', sans-serif;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* CSS cho popup xác nhận hóa đơn */
+        .bill-confirmation-popup {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .bill-confirmation {
+            text-align: left;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .bill-info {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1890ff;
+        }
+        
+        .bill-info-row {
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #333;
+        }
+        
+        .bill-info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .bill-items-list {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+        }
+        
+        .bill-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .bill-item-row:last-child {
+            border-bottom: none;
+        }
+        
+        .bill-item-name {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+            margin-right: 15px;
+        }
+        
+        .bill-item-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            min-width: 120px;
+        }
+        
+        .bill-item-price {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .bill-item-quantity {
+            font-size: 12px;
+            color: #666;
+            margin: 2px 0;
+        }
+        
+        .bill-item-total {
+            font-weight: 600;
+            color: #1890ff;
+        }
+        
+        .bill-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .bill-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .bill-summary-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .bill-summary-row.discount {
+            color: #dc3545;
+        }
+        
+        .bill-summary-row.total {
+            font-size: 16px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 8px;
+            margin-top: 8px;
+            color: #28a745;
+        }
+        
+        .bill-confirmation-content {
+            text-align: left;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-with-action">
-            <h1>Hệ Thống In Bill</h1>
+            <h1>Chú Gà Trống Tây Ninh</h1>
             <a href="settings.html" class="settings-button">Cài đặt</a>
         </div>
         

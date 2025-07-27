@@ -10,6 +10,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Tùy chỉnh SweetAlert2 */
+        .swal2-popup {
+            font-family: 'Roboto', sans-serif;
+            border-radius: 12px;
+        }
+        
+        .swal2-title {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .swal2-confirm {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .swal2-cancel {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        /* Tùy chỉnh Toastify */
+        .toastify {
+            font-family: 'Roboto', sans-serif;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
 </head>
 <body>
     <div class="container settings-container">
@@ -95,6 +125,9 @@
     
     <!-- Thêm thư viện QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="settings.js"></script>
 </body>
 </html> 

@@ -71,12 +71,36 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         localStorage.setItem(STORE_SETTINGS_KEY, JSON.stringify(settings));
-        alert('Đã lưu cài đặt thành công!');
+        Toastify({
+            text: "Đã lưu cài đặt thành công!",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#4CAF50",
+            stopOnFocus: true
+        }).showToast();
     }
     
     // Khôi phục cài đặt mặc định
     function resetSettings() {
-        if (confirm('Bạn có chắc chắn muốn khôi phục cài đặt mặc định?')) {
+        Swal.fire({
+            title: 'Xác nhận khôi phục',
+            text: 'Bạn có chắc chắn muốn khôi phục cài đặt mặc định?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Khôi phục',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                performResetSettings();
+            }
+        });
+    }
+    
+    // Hàm thực hiện khôi phục cài đặt
+    function performResetSettings() {
             storeNameInput.value = '';
             storePhoneInput.value = '';
             storeAddressInput.value = '';
@@ -92,9 +116,15 @@ document.addEventListener('DOMContentLoaded', function() {
             downloadQrButton.disabled = true;
             
             localStorage.removeItem(STORE_SETTINGS_KEY);
-            alert('Đã khôi phục cài đặt mặc định!');
+            Toastify({
+                text: "Đã khôi phục cài đặt mặc định!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#4CAF50",
+                stopOnFocus: true
+            }).showToast();
         }
-    }
     
     // Tạo QR VietQR
     function generateVietQR() {
