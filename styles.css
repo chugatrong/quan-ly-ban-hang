@@ -1075,35 +1075,466 @@ th {
     }
 }
 
-/* Cải thiện bố cục 3 cột */
+/* Cải thiện bố cục 3 cột - tối ưu cho laptop 14 inch trở lên */
 .main-layout {
     display: flex;
     gap: 20px;
     height: calc(100vh - 120px);
+    min-height: 600px;
 }
 
 .left-column {
-    flex: 0.8;
-    min-width: 250px;
-    max-width: 300px;
+    flex: 0 0 280px; /* Fixed width thay vì flex */
+    min-width: 280px;
+    max-width: 280px;
     display: flex;
     flex-direction: column;
 }
 
 .middle-column {
-    flex: 1.2;
-    min-width: 400px;
+    flex: 1;
+    min-width: 450px; /* Tăng min-width để đảm bảo không bị nhảy */
     display: flex;
     flex-direction: column;
 }
 
 .right-column {
-    flex: 1;
-    min-width: 350px;
+    flex: 0 0 320px; /* Fixed width thay vì flex */
+    min-width: 320px;
+    max-width: 320px;
     display: flex;
     flex-direction: column;
 }
 
+/* Tối ưu cho laptop 14 inch (1366px) */
+@media (min-width: 1366px) and (max-width: 1600px) {
+    .container {
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+    
+    .left-column {
+        flex: 0 0 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 500px;
+    }
+    
+    .right-column {
+        flex: 0 0 350px;
+        min-width: 350px;
+        max-width: 350px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+    }
+    
+    .menu-item {
+        min-height: 90px;
+        padding: 15px 10px;
+    }
+    
+    .menu-item h3 {
+        font-size: 15px;
+    }
+    
+    .menu-item p {
+        font-size: 14px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        gap: 10px;
+    }
+    
+    .table-list-item {
+        padding: 15px 10px;
+    }
+    
+    .table-list-number {
+        font-size: 15px;
+    }
+    
+    .table-list-info {
+        font-size: 11px;
+    }
+}
+
+/* Tối ưu cho laptop 15.6 inch (1920px) */
+@media (min-width: 1601px) and (max-width: 1920px) {
+    .container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    .left-column {
+        flex: 0 0 320px;
+        min-width: 320px;
+        max-width: 320px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 550px;
+    }
+    
+    .right-column {
+        flex: 0 0 380px;
+        min-width: 380px;
+        max-width: 380px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 18px;
+    }
+    
+    .menu-item {
+        min-height: 100px;
+        padding: 18px 12px;
+    }
+    
+    .menu-item h3 {
+        font-size: 16px;
+    }
+    
+    .menu-item p {
+        font-size: 15px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 12px;
+    }
+    
+    .table-list-item {
+        padding: 18px 12px;
+    }
+    
+    .table-list-number {
+        font-size: 16px;
+    }
+    
+    .table-list-info {
+        font-size: 12px;
+    }
+}
+
+/* Tối ưu cho màn hình lớn (1921px+) */
+@media (min-width: 1921px) {
+    .container {
+        max-width: 1800px;
+        margin: 0 auto;
+    }
+    
+    .left-column {
+        flex: 0 0 350px;
+        min-width: 350px;
+        max-width: 350px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 600px;
+    }
+    
+    .right-column {
+        flex: 0 0 420px;
+        min-width: 420px;
+        max-width: 420px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .menu-item {
+        min-height: 110px;
+        padding: 20px 15px;
+    }
+    
+    .menu-item h3 {
+        font-size: 17px;
+    }
+    
+    .menu-item p {
+        font-size: 16px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 15px;
+    }
+    
+    .table-list-item {
+        padding: 20px 15px;
+    }
+    
+    .table-list-number {
+        font-size: 17px;
+    }
+    
+    .table-list-info {
+        font-size: 13px;
+    }
+}
+
+/* Đảm bảo layout ổn định cho màn hình trung bình */
+@media (min-width: 1024px) and (max-width: 1365px) {
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .left-column {
+        flex: 0 0 260px;
+        min-width: 260px;
+        max-width: 260px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 400px;
+    }
+    
+    .right-column {
+        flex: 0 0 300px;
+        min-width: 300px;
+        max-width: 300px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+    
+    .menu-item {
+        min-height: 80px;
+        padding: 12px 8px;
+    }
+    
+    .menu-item h3 {
+        font-size: 14px;
+    }
+    
+    .menu-item p {
+        font-size: 13px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 8px;
+    }
+    
+    .table-list-item {
+        padding: 12px 8px;
+    }
+    
+    .table-list-number {
+        font-size: 14px;
+    }
+    
+    .table-list-info {
+        font-size: 10px;
+    }
+}
+
+/* Cải thiện responsive design - chỉ áp dụng cho màn hình nhỏ */
+@media (max-width: 1023px) {
+    .main-layout {
+        flex-direction: column;
+        height: auto;
+        gap: 15px;
+    }
+    
+    .left-column, .middle-column, .right-column {
+        flex: none;
+        width: 100%;
+        max-width: none;
+        min-width: auto;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        max-height: 400px;
+    }
+    
+    .table-list-grid {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    }
+    
+    .bill-items {
+        min-height: 200px;
+        max-height: 300px;
+    }
+}
+
+/* Tối ưu cho tablet landscape */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+    .main-layout {
+        flex-direction: row;
+        height: calc(100vh - 100px);
+    }
+    
+    .left-column {
+        flex: 0 0 200px;
+        min-width: 200px;
+        max-width: 200px;
+    }
+    
+    .middle-column {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .right-column {
+        flex: 0 0 250px;
+        min-width: 250px;
+        max-width: 250px;
+    }
+    
+    .menu-grid {
+        max-height: 300px;
+    }
+    
+    .bill-items {
+        min-height: 250px;
+        max-height: 350px;
+    }
+}
+
+/* Cải thiện hiển thị cho màn hình có độ phân giải cao */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .menu-item,
+    .table-list-item,
+    .settings-button,
+    .toggle-button {
+        border-width: 0.5px;
+    }
+    
+    .table-display {
+        border-width: 1px;
+    }
+    
+    /* Tối ưu font rendering */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Đảm bảo scroll mượt mà */
+.menu-grid,
+.bill-items,
+.table-list-container {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.menu-grid::-webkit-scrollbar,
+.bill-items::-webkit-scrollbar,
+.table-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.menu-grid::-webkit-scrollbar-track,
+.bill-items::-webkit-scrollbar-track,
+.table-list-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.menu-grid::-webkit-scrollbar-thumb,
+.bill-items::-webkit-scrollbar-thumb,
+.table-list-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.menu-grid::-webkit-scrollbar-thumb:hover,
+.bill-items::-webkit-scrollbar-thumb:hover,
+.table-list-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Tối ưu performance cho màn hình lớn */
+@media (min-width: 1024px) {
+    .menu-item,
+    .table-list-item {
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+    
+    /* Giữ animation cho desktop */
+    .menu-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-color: #1890ff;
+    }
+    
+    .table-list-item:hover {
+        border-color: #667eea !important;
+        background: linear-gradient(145deg, #f8f9ff 0%, #e8f2ff 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+    }
+}
+
+/* Đảm bảo form elements không bị overflow */
+.form-group input, 
+.form-group select,
+.form-group textarea {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+/* Tối ưu table layout */
+table {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+th, td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Đảm bảo buttons không bị overflow */
+.bill-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bill-actions button {
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+/* Tối ưu cho landscape mode trên laptop */
+@media (min-width: 1024px) and (orientation: landscape) {
+    .main-layout {
+        height: calc(100vh - 100px);
+    }
+    
+    .menu-grid {
+        max-height: calc(100vh - 400px);
+    }
+    
+    .bill-items {
+        max-height: calc(100vh - 450px);
+    }
+}
+
+/* Bottom section và các phần tử khác */
 .bottom-section {
     width: 100%;
     margin-top: 20px;
@@ -1193,8 +1624,7 @@ th {
     font-weight: bold;
     font-size: 1.2em;
     color: #2c3e50;
-} 
-
+}
 
 /* CSS cho table display */
 #current-table-number-display {
@@ -1204,6 +1634,7 @@ th {
     color: #d2691e;
     margin: 8px 0 12px 0;
 }
+
 .table-display {
     display: flex;
     align-items: center;
@@ -1215,26 +1646,31 @@ th {
     border: 2px solid #d2691e;
     box-shadow: 0 4px 15px rgba(210, 105, 30, 0.2);
 }
+
 .table-number {
     font-size: 24px;
     font-weight: bold;
     color: #d2691e;
 }
+
 .table-order-info {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
+
 .order-count {
     color: #52c41a;
     font-weight: bold;
     font-size: 14px;
 }
+
 .order-total {
     color: #1890ff;
     font-weight: bold;
     font-size: 14px;
 }
+
 /* CSS cho danh sách bàn - cải thiện */
 .table-list-container {
     padding: 15px;
@@ -1246,6 +1682,7 @@ th {
     background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
     border: 1px solid #e9ecef;
 }
+
 .table-list-header {
     display: flex;
     justify-content: space-between;
@@ -1254,12 +1691,14 @@ th {
     padding-bottom: 10px;
     border-bottom: 2px solid #e9ecef;
 }
+
 .table-list-header h3 {
     margin: 0;
     color: #333;
     font-size: 16px;
     font-weight: bold;
 }
+
 .btn-refresh {
     padding: 5px 10px;
     background: #1890ff;
@@ -1270,16 +1709,19 @@ th {
     font-size: 12px;
     transition: all 0.3s;
 }
+
 .btn-refresh:hover {
     background: #40a9ff;
     transform: scale(1.05);
 }
+
 .table-list-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     gap: 8px;
     padding: 10px 0;
 }
+
 .table-list-item {
     padding: 12px 8px;
     border: 2px solid #e9ecef;
@@ -1292,6 +1734,7 @@ th {
     position: relative;
     overflow: hidden;
 }
+
 .table-list-item::before {
     content: '' !important;
     position: absolute !important;
@@ -1302,38 +1745,45 @@ th {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent) !important;
     transition: left 0.5s !important;
 }
+
 .table-list-item:hover::before {
     left: 100% !important;
 }
+
 .table-list-item:hover {
     border-color: #667eea !important;
     background: linear-gradient(145deg, #f8f9ff 0%, #e8f2ff 100%) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
 }
+
 .table-list-item.has-order {
     border-color: #52c41a;
     background: linear-gradient(145deg, #f6ffed 0%, #e6f7ff 100%);
     box-shadow: 0 4px 15px rgba(82, 196, 26, 0.3);
 }
+
 .table-list-item.has-order:hover {
     border-color: #389e0d !important;
     background: linear-gradient(145deg, #e6f7ff 0%, #d6f7ff 100%) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 6px 20px rgba(82, 196, 26, 0.4) !important;
 }
+
 .table-list-item.current-table {
     border-color: #d2691e;
     background: linear-gradient(145deg, #fff7e6 0%, #ffe6cc 100%);
     box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
     transform: scale(1.05);
 }
+
 .table-list-item.current-table:hover {
     border-color: #b8860b !important;
     background: linear-gradient(145deg, #fff2cc 0%, #ffe6cc 100%) !important;
     transform: translateY(-2px) scale(1.02) !important;
     box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4) !important;
 }
+
 .table-list-number {
     font-weight: bold;
     font-size: 14px;
@@ -1341,11 +1791,13 @@ th {
     color: #333;
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
+
 .table-list-info {
     font-size: 10px;
     color: #666;
     margin-top: 8px;
 }
+
 .table-list-count {
     color: #52c41a;
     font-weight: bold;
@@ -1356,6 +1808,7 @@ th {
     display: inline-block;
     margin-bottom: 2px;
 }
+
 .table-list-total {
     color: #1890ff;
     font-weight: bold;
@@ -1365,6 +1818,7 @@ th {
     border-radius: 8px;
     display: inline-block;
 }
+
 .table-list-empty {
     font-size: 10px;
     color: #999;
@@ -1390,112 +1844,6 @@ th {
     opacity: 1;
     background-color: rgba(255, 77, 79, 0.1);
     transform: scale(1.1);
-}
-
-/* Responsive design */
-@media (max-width: 1200px) {
-    .main-layout {
-        flex-direction: column;
-        height: auto;
-    }
-    .left-column, .middle-column, .right-column {
-        flex: none;
-        height: auto;
-        max-width: none;
-    }
-    .table-list-grid {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    }
-    .menu-grid {
-        max-height: 400px;
-    }
-    .bill-items {
-        min-height: 150px;
-    }
-}
-
-/* Meta viewport cho mobile optimization */
-@media (max-width: 768px) {
-    /* Đảm bảo font size không bị zoom trên iOS */
-    input, select, textarea {
-        font-size: 16px !important;
-    }
-    
-    /* Tối ưu cho touch scrolling */
-    .menu-grid,
-    .bill-items,
-    .table-list-container {
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-        overscroll-behavior: contain;
-    }
-    
-    /* Cải thiện performance */
-    .menu-item,
-    .table-list-item {
-        will-change: transform;
-        backface-visibility: hidden;
-        transform: translateZ(0);
-    }
-    
-    /* Giảm animation cho mobile */
-    .menu-item:hover,
-    .table-list-item:hover {
-        transform: none;
-        transition: none;
-    }
-    
-    /* Tối ưu cho landscape mode */
-    @media (orientation: landscape) {
-        .main-layout {
-            flex-direction: row;
-            height: calc(100vh - 80px);
-        }
-        
-        .left-column {
-            flex: 0.3;
-            min-width: 120px;
-            max-width: 150px;
-        }
-        
-        .middle-column {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .right-column {
-            flex: 0.4;
-            min-width: 150px;
-            max-width: 200px;
-        }
-        
-        .menu-grid {
-            max-height: 150px;
-        }
-        
-        .bill-items {
-            min-height: 120px;
-            max-height: 150px;
-        }
-        
-        .table-list-grid {
-            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-        }
-    }
-}
-
-/* Tối ưu cho màn hình có độ phân giải cao */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .menu-item,
-    .table-list-item,
-    .settings-button,
-    .toggle-button {
-        border-width: 0.5px;
-    }
-    
-    .table-display {
-        border-width: 1px;
-    }
 }
 
 /* Tối ưu cho dark mode (nếu được hỗ trợ) */

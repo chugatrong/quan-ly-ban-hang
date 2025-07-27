@@ -1,6 +1,280 @@
 /* CSS dành riêng cho trang cài đặt */
 .settings-container {
     max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Tối ưu cho laptop 14 inch trở lên */
+@media (min-width: 1366px) {
+    .settings-container {
+        max-width: 900px;
+        padding: 30px;
+    }
+    
+    .header-with-nav {
+        margin-bottom: 35px;
+    }
+    
+    .settings-form h2 {
+        margin-top: 35px;
+        font-size: 22px;
+    }
+    
+    .settings-form h3 {
+        margin-top: 25px;
+        font-size: 18px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+    
+    .form-group input, 
+    .form-group select,
+    .form-group textarea {
+        padding: 14px;
+        font-size: 16px;
+        min-height: 48px;
+    }
+    
+    .form-group textarea {
+        min-height: 100px;
+    }
+    
+    .form-group select {
+        height: 48px;
+    }
+    
+    .qr-code-section {
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    #qr-container {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .qr-actions button {
+        padding: 14px 24px;
+        font-size: 16px;
+        min-height: 48px;
+    }
+    
+    .form-actions button {
+        padding: 14px 28px;
+        font-size: 16px;
+        min-height: 48px;
+    }
+}
+
+/* Tối ưu cho laptop 15.6 inch (1920px) */
+@media (min-width: 1601px) and (max-width: 1920px) {
+    .settings-container {
+        max-width: 1000px;
+        padding: 35px;
+    }
+    
+    .header-with-nav {
+        margin-bottom: 40px;
+    }
+    
+    .settings-form h2 {
+        margin-top: 40px;
+        font-size: 24px;
+    }
+    
+    .settings-form h3 {
+        margin-top: 30px;
+        font-size: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 30px;
+    }
+    
+    .form-group label {
+        font-size: 17px;
+    }
+    
+    .form-group input, 
+    .form-group select,
+    .form-group textarea {
+        padding: 16px;
+        font-size: 17px;
+        min-height: 52px;
+    }
+    
+    .form-group textarea {
+        min-height: 120px;
+    }
+    
+    .form-group select {
+        height: 52px;
+    }
+    
+    .qr-code-section {
+        padding: 30px;
+        margin: 35px 0;
+    }
+    
+    #qr-container {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .qr-actions button {
+        padding: 16px 28px;
+        font-size: 17px;
+        min-height: 52px;
+    }
+    
+    .form-actions button {
+        padding: 16px 32px;
+        font-size: 17px;
+        min-height: 52px;
+    }
+}
+
+/* Tối ưu cho màn hình lớn (1921px+) */
+@media (min-width: 1921px) {
+    .settings-container {
+        max-width: 1200px;
+        padding: 40px;
+    }
+    
+    .header-with-nav {
+        margin-bottom: 45px;
+    }
+    
+    .settings-form h2 {
+        margin-top: 45px;
+        font-size: 26px;
+    }
+    
+    .settings-form h3 {
+        margin-top: 35px;
+        font-size: 22px;
+    }
+    
+    .form-group {
+        margin-bottom: 35px;
+    }
+    
+    .form-group label {
+        font-size: 18px;
+    }
+    
+    .form-group input, 
+    .form-group select,
+    .form-group textarea {
+        padding: 18px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+    
+    .form-group textarea {
+        min-height: 140px;
+    }
+    
+    .form-group select {
+        height: 56px;
+    }
+    
+    .qr-code-section {
+        padding: 35px;
+        margin: 40px 0;
+    }
+    
+    #qr-container {
+        width: 260px;
+        height: 260px;
+    }
+    
+    .qr-actions button {
+        padding: 18px 32px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+    
+    .form-actions button {
+        padding: 18px 36px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+}
+
+/* Đảm bảo layout ổn định cho màn hình trung bình */
+@media (min-width: 1024px) and (max-width: 1365px) {
+    .settings-container {
+        max-width: 850px;
+        padding: 25px;
+    }
+    
+    .header-with-nav {
+        margin-bottom: 30px;
+    }
+    
+    .settings-form h2 {
+        margin-top: 30px;
+        font-size: 20px;
+    }
+    
+    .settings-form h3 {
+        margin-top: 20px;
+        font-size: 17px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-size: 15px;
+    }
+    
+    .form-group input, 
+    .form-group select,
+    .form-group textarea {
+        padding: 12px;
+        font-size: 15px;
+        min-height: 44px;
+    }
+    
+    .form-group textarea {
+        min-height: 80px;
+    }
+    
+    .form-group select {
+        height: 44px;
+    }
+    
+    .qr-code-section {
+        padding: 20px;
+        margin: 25px 0;
+    }
+    
+    #qr-container {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .qr-actions button {
+        padding: 12px 20px;
+        font-size: 15px;
+        min-height: 44px;
+    }
+    
+    .form-actions button {
+        padding: 12px 24px;
+        font-size: 15px;
+        min-height: 44px;
+    }
 }
 
 .header-with-nav {
@@ -57,6 +331,7 @@
     border-radius: 4px;
     font-family: inherit;
     font-size: 14px;
+    box-sizing: border-box;
 }
 
 .form-group textarea {
@@ -156,11 +431,11 @@
     cursor: not-allowed;
 }
 
-/* Responsive styling */
-@media (max-width: 768px) {
+/* Responsive styling cho màn hình nhỏ */
+@media (max-width: 1023px) {
     .settings-container {
         max-width: 100%;
-        padding: 10px;
+        padding: 15px;
     }
     
     .header-with-nav {
@@ -252,213 +527,8 @@
     }
 }
 
-/* iPad và tablet */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .settings-container {
-        max-width: 90%;
-        padding: 20px;
-    }
-    
-    .header-with-nav {
-        margin-bottom: 25px;
-    }
-    
-    .settings-form h2 {
-        font-size: 20px;
-    }
-    
-    .settings-form h3 {
-        font-size: 17px;
-    }
-    
-    .form-group input, 
-    .form-group select,
-    .form-group textarea {
-        padding: 12px;
-        font-size: 15px;
-    }
-    
-    .qr-actions {
-        gap: 12px;
-    }
-    
-    .qr-actions button {
-        padding: 12px 20px;
-        font-size: 15px;
-    }
-    
-    .form-actions button {
-        padding: 12px 24px;
-        font-size: 15px;
-    }
-}
-
-/* Màn hình nhỏ (điện thoại) */
-@media (max-width: 480px) {
-    .settings-container {
-        padding: 8px;
-    }
-    
-    .header-with-nav {
-        gap: 12px;
-        margin-bottom: 15px;
-    }
-    
-    .btn-back {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-    
-    .settings-form h2 {
-        margin-top: 15px;
-        font-size: 16px;
-    }
-    
-    .settings-form h3 {
-        margin-top: 12px;
-        font-size: 15px;
-    }
-    
-    .form-group {
-        margin-bottom: 12px;
-    }
-    
-    .form-group label {
-        font-size: 13px;
-    }
-    
-    .form-group input, 
-    .form-group select,
-    .form-group textarea {
-        padding: 10px;
-        font-size: 14px;
-    }
-    
-    .qr-code-section {
-        padding: 12px;
-        margin: 15px 0;
-    }
-    
-    #qr-container {
-        width: 160px;
-        height: 160px;
-    }
-    
-    .qr-actions button {
-        font-size: 13px;
-    }
-    
-    .form-actions button {
-        font-size: 14px;
-    }
-}
-
-/* Màn hình rất nhỏ */
-@media (max-width: 360px) {
-    .settings-container {
-        padding: 5px;
-    }
-    
-    .header-with-nav {
-        gap: 10px;
-        margin-bottom: 12px;
-    }
-    
-    .btn-back {
-        padding: 6px 10px;
-        font-size: 12px;
-    }
-    
-    .settings-form h2 {
-        font-size: 15px;
-    }
-    
-    .settings-form h3 {
-        font-size: 14px;
-    }
-    
-    .form-group label {
-        font-size: 12px;
-    }
-    
-    .form-group input, 
-    .form-group select,
-    .form-group textarea {
-        padding: 8px;
-        font-size: 13px;
-    }
-    
-    .qr-code-section {
-        padding: 10px;
-    }
-    
-    #qr-container {
-        width: 140px;
-        height: 140px;
-    }
-    
-    .qr-actions button {
-        font-size: 12px;
-    }
-    
-    .form-actions button {
-        font-size: 13px;
-    }
-}
-
-/* Landscape orientation cho điện thoại */
-@media (max-width: 768px) and (orientation: landscape) {
-    .settings-container {
-        max-width: 95%;
-    }
-    
-    .header-with-nav {
-        flex-direction: row;
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .qr-actions {
-        flex-direction: row;
-        width: auto;
-    }
-    
-    .qr-actions button {
-        width: auto;
-    }
-    
-    .form-actions {
-        flex-direction: row;
-    }
-    
-    .form-actions button {
-        width: auto;
-    }
-}
-
-/* Tối ưu cho iPad Pro */
-@media (min-width: 1025px) and (max-width: 1366px) {
-    .settings-container {
-        max-width: 800px;
-    }
-    
-    .form-group input, 
-    .form-group select,
-    .form-group textarea {
-        font-size: 16px;
-    }
-    
-    .qr-actions button {
-        font-size: 16px;
-    }
-    
-    .form-actions button {
-        font-size: 16px;
-    }
-}
-
 /* Cải thiện touch targets cho mobile */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .btn-back,
     .btn-primary, 
     .btn-secondary,
@@ -478,5 +548,14 @@
     .settings-container {
         -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
+    }
+}
+
+/* Tối ưu font rendering cho màn hình có độ phân giải cao */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
 } 
