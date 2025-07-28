@@ -352,10 +352,7 @@ h2 {
 
 .bill-items table {
     width: 100%;
-    border-collapse: collapse;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    
 }
 
 .bill-items thead {
