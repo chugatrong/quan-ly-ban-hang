@@ -4,7 +4,9 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+html {
+  zoom: 90%;
+}
 body {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -88,7 +90,7 @@ h2 {
 }
 
 .right-column {
-    flex: 0 0 350px;
+    flex: 0 0 400px; /* Điều chỉnh chiều rộng cột thứ 3 */
     background: #f8f9fa;
     border-radius: 8px;
     padding: 15px;
@@ -225,6 +227,7 @@ h2 {
 
 /* Bill section */
 .bill-info {
+    display: none   ;
     margin-bottom: 15px;
     padding: 15px;
     background: white;
@@ -560,7 +563,7 @@ h2 {
 
 /* Bill confirmation modal styles */
 .bill-confirmation {
-    max-height: 70vh;
+    max-height: 55vh;
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -1175,19 +1178,19 @@ h2 {
 
 #current-table-number-display {
     background: #e3f2fd;
-    padding: 10px;
+    padding: 0;
     border-radius: 8px;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 0;
     border-left: 4px solid #1890ff;
 }
 
 .table-display {
     background: #f8f9fa;
-    padding: 15px;
+    padding: 0;
     border-radius: 8px;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 0px;
     border: 1px solid #e9ecef;
 }
 

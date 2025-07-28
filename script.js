@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Các phần tử DOM
     const menuItemsContainer = document.getElementById('menu-items');
     const billItemsBody = document.getElementById('bill-items-body');
@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const qrImage = document.getElementById('qr-image');
     const qrAmount = document.getElementById('qr-amount');
     const closeModal = document.querySelector('.close');
-    
+
     // Các khóa localStorage
     const STORE_SETTINGS_KEY = 'storeSettings';
     const MENU_DATA_KEY = 'menuItems';
-    
+
     // Danh sách món ăn và hóa đơn
     let menuItems = [];
     let billItems = [];
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         delete tableData[tableNumber];
         localStorage.setItem('tableOrderData', JSON.stringify(tableData));
     }
-    
+
     // On first load, set default store info if not present
     function ensureDefaultStoreSettings() {
         const savedSettings = localStorage.getItem(STORE_SETTINGS_KEY);
@@ -109,39 +109,39 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem(STORE_SETTINGS_KEY, JSON.stringify(DEFAULT_STORE_SETTINGS));
         }
     }
-    
+
     // Tải thông tin cửa hàng từ localStorage nếu có
     function loadStoreInfo() {
         const storeName = localStorage.getItem('storeName');
-        const storeAddress = localStorage.getItem('storeAddress'); 
+        const storeAddress = localStorage.getItem('storeAddress');
     }
-    
+
     // Lưu thông tin cửa hàng vào localStorage
     function saveStoreInfo() {
         localStorage.setItem('storeName', storeNameInput.value);
         localStorage.setItem('storeAddress', storeAddressInput.value);
     }
-    
+
     // Thêm sự kiện lưu thông tin cửa hàng khi thay đổi 
-    
+
     // Xử lý nút tăng/giảm số bàn
     if (tableIncreaseButton && tableDecreaseButton) {
-        tableIncreaseButton.addEventListener('click', function() {
+        tableIncreaseButton.addEventListener('click', function () {
             let currentValue = parseInt(tableNumberInput.value) || 0;
             tableNumberInput.value = currentValue + 1;
         });
-        
-        tableDecreaseButton.addEventListener('click', function() {
+
+        tableDecreaseButton.addEventListener('click', function () {
             let currentValue = parseInt(tableNumberInput.value) || 0;
             if (currentValue > 1) {
                 tableNumberInput.value = currentValue - 1;
             }
         });
     }
-    
+
     // Theo dõi sự thay đổi phương thức thanh toán
     if (paymentCashRadio && paymentTransferRadio) {
-        paymentCashRadio.addEventListener('change', function() {
+        paymentCashRadio.addEventListener('change', function () {
             if (this.checked) {
                 // Ẩn phần QR khi chọn tiền mặt
                 if (qrPaymentSection) {
@@ -153,8 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        
-        paymentTransferRadio.addEventListener('change', function() {
+
+        paymentTransferRadio.addEventListener('change', function () {
             if (this.checked && storeSettings && storeSettings.bankAccount) {
                 // Hiện phần QR khi chọn chuyển khoản
                 if (qrPaymentSection) {
@@ -175,10 +175,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Theo dõi sự thay đổi checkbox hiển thị QR
     if (showQrInBillCheckbox) {
-        showQrInBillCheckbox.addEventListener('change', function() {
+        showQrInBillCheckbox.addEventListener('change', function () {
             // Nếu checkbox được bật nhưng không có thông tin ngân hàng
             if (this.checked && (!storeSettings || !storeSettings.bankAccount)) {
                 Swal.fire({
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.checked = false;
                 return;
             }
-            
+
             // Hiển thị nút QR
             if (this.checked) {
                 if (qrPaymentSection) {
@@ -204,29 +204,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Hiển thị modal QR
     if (showQrButton) {
-        showQrButton.addEventListener('click', function() {
+        showQrButton.addEventListener('click', function () {
             const total = billItems.reduce((sum, item) => sum + item.total, 0);
             displayQrCode(total);
         });
     }
-    
+
     // Đóng modal QR
     if (closeModal) {
-        closeModal.addEventListener('click', function() {
+        closeModal.addEventListener('click', function () {
             qrModal.style.display = 'none';
         });
-        
+
         // Đóng modal khi click bên ngoài
-        window.addEventListener('click', function(event) {
+        window.addEventListener('click', function (event) {
             if (event.target == qrModal) {
                 qrModal.style.display = 'none';
             }
         });
     }
-    
+
     // Hiển thị QR code thanh toán
     function displayQrCode(amount) {
         if (!storeSettings || !storeSettings.bankAccount || !storeSettings.bankName) {
@@ -239,35 +239,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             return;
         }
-        
+
         // Tạo URL VietQR với số tiền
         const description = 'Thanh toan hoa don';
         const vietqrUrl = `https://img.vietqr.io/image/${storeSettings.bankName}-${storeSettings.bankAccount}-compact2.jpg?amount=${amount}&addInfo=${description}&accountName=${encodeURIComponent(storeSettings.accountName || '')}`;
-        
+
         // Hiển thị hình ảnh QR
         qrImage.innerHTML = `<img src="${vietqrUrl}" alt="QR Code thanh toán">`;
         qrAmount.textContent = formatCurrency(amount);
-        
+
         // Hiển thị modal
         qrModal.style.display = 'block';
     }
-    
+
     // Tải cài đặt từ localStorage
     function loadStoreSettings() {
         const savedSettings = localStorage.getItem(STORE_SETTINGS_KEY);
         if (savedSettings) {
             try {
                 storeSettings = JSON.parse(savedSettings);
-                
+
                 // Điền thông tin cửa hàng vào form nếu có
                 if (storeNameInput && storeSettings.storeName) {
                     storeNameInput.value = storeSettings.storeName;
                 }
-                
+
                 if (storeAddressInput && storeSettings.storeAddress) {
                     storeAddressInput.value = storeSettings.storeAddress;
                 }
-                
+
                 // Kiểm tra xem có thông tin ngân hàng không
                 if (storeSettings.bankName && storeSettings.bankAccount) {
                     // Hiển thị nút QR khi phương thức thanh toán là chuyển khoản
@@ -281,28 +281,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Xử lý nút thu gọn/mở rộng danh sách
     if (toggleMenuButton) {
-        toggleMenuButton.addEventListener('click', function() {
+        toggleMenuButton.addEventListener('click', function () {
             toggleMenu();
         });
     }
-    
+
     // Xử lý chức năng tìm kiếm
     if (menuSearchInput) {
-        menuSearchInput.addEventListener('input', function() {
+        menuSearchInput.addEventListener('input', function () {
             handleSearch();
         });
-        
-        menuSearchInput.addEventListener('focus', function() {
+
+        menuSearchInput.addEventListener('focus', function () {
             if (menuSearchInput.value.trim() !== '') {
                 showSearchResults();
             }
         });
-        
+
         // Xử lý phím Enter để chọn món đầu tiên trong kết quả tìm kiếm
-        menuSearchInput.addEventListener('keydown', function(e) {
+        menuSearchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 const firstResult = searchResultsContainer.querySelector('.search-item');
                 if (firstResult) {
@@ -315,20 +315,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        
+
         // Ẩn kết quả tìm kiếm khi nhấp ra ngoài
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!searchResultsContainer.contains(e.target) && e.target !== menuSearchInput) {
                 hideSearchResults();
             }
         });
     }
-    
+
     // Tự động lưu dữ liệu menu vào localStorage
     function autoSaveMenuItems() {
         localStorage.setItem(MENU_DATA_KEY, JSON.stringify(menuItems));
     }
-    
+
     // Tải dữ liệu từ localStorage nếu có
     function loadSavedMenuItems() {
         const savedData = localStorage.getItem(MENU_DATA_KEY);
@@ -343,25 +343,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return false;
     }
-    
+
     // Lưu danh sách món vào localStorage
     function saveMenuItems() {
         autoSaveMenuItems();
     }
-    
+
     // Hàm tìm kiếm món ăn
     function handleSearch() {
         const searchText = menuSearchInput.value.trim().toLowerCase();
-        
+
         if (searchText === '') {
             hideSearchResults();
             return;
         }
-        
-        const results = menuItems.filter(item => 
+
+        const results = menuItems.filter(item =>
             item.name.toLowerCase().includes(searchText)
         );
-        
+
         if (results.length > 0) {
             renderSearchResults(results);
             showSearchResults();
@@ -369,42 +369,42 @@ document.addEventListener('DOMContentLoaded', function() {
             hideSearchResults();
         }
     }
-    
+
     // Hiển thị kết quả tìm kiếm
     function renderSearchResults(results) {
         searchResultsContainer.innerHTML = '';
-        
+
         results.forEach(item => {
             const index = menuItems.findIndex(menuItem => menuItem.name === item.name);
             const resultItem = document.createElement('div');
             resultItem.className = 'search-item';
             resultItem.textContent = `${item.name} - ${formatCurrency(item.price)}`;
             resultItem.setAttribute('data-index', index);
-            
-            resultItem.addEventListener('click', function() {
+
+            resultItem.addEventListener('click', function () {
                 addToBill(item);
                 hideSearchResults();
                 menuSearchInput.value = '';
             });
-            
+
             searchResultsContainer.appendChild(resultItem);
         });
     }
-    
+
     // Hiển thị khung kết quả tìm kiếm
     function showSearchResults() {
         searchResultsContainer.classList.add('active');
     }
-    
+
     // Ẩn khung kết quả tìm kiếm
     function hideSearchResults() {
         searchResultsContainer.classList.remove('active');
     }
-    
+
     // Thu gọn/mở rộng danh sách món
     function toggleMenu() {
         isMenuCollapsed = !isMenuCollapsed;
-        
+
         if (isMenuCollapsed) {
             menuItemsContainer.classList.add('collapsed');
             toggleMenuButton.textContent = 'Mở rộng';
@@ -413,13 +413,13 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleMenuButton.textContent = 'Thu gọn';
         }
     }
-    
 
-    
+
+
     // Hiển thị danh sách món ăn
     function renderMenuItems() {
         menuItemsContainer.innerHTML = '';
-        
+
         menuItems.forEach((item, index) => {
             const menuItemElement = document.createElement('div');
             menuItemElement.className = 'menu-item';
@@ -427,16 +427,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3>${item.name}</h3>
                 <p>${formatCurrency(item.price)}</p>
             `;
-            
+
             // Thêm sự kiện click trực tiếp vào section món
-            menuItemElement.addEventListener('click', function() {
+            menuItemElement.addEventListener('click', function () {
                 addToBill(item);
             });
-            
+
             menuItemsContainer.appendChild(menuItemElement);
         });
     }
-    
+
     // Thêm món vào hóa đơn
     function addToBill(item) {
         // Nếu chưa có số bàn thì tự động chọn bàn trống đầu tiên
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Kiểm tra xem món đã có trong hóa đơn chưa
         const existingItemIndex = billItems.findIndex(billItem => billItem.name === item.name);
-        
+
         if (existingItemIndex !== -1) {
             // Nếu món đã có trong hóa đơn, tăng số lượng lên 1 và di chuyển lên đầu
             const existingItem = billItems.splice(existingItemIndex, 1)[0];
@@ -466,23 +466,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 total: item.price
             });
         }
-        
+
         // Lưu order hiện tại vào bàn
         saveCurrentTableOrder();
         renderBillItems();
         calculateTotal();
         updateTableList();
-        
+
         // Scroll đến đầu danh sách bill items
         const billItemsContainer = document.querySelector('.bill-items tbody');
         if (billItemsContainer) {
             billItemsContainer.scrollTop = 0;
         }
-        
+
         // Highlight món vừa thêm/cập nhật
         highlightBillItem(0);
     }
-    
+
     // Hàm highlight món trong bill
     function highlightBillItem(index) {
         setTimeout(() => {
@@ -496,11 +496,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100); // Delay nhỏ để đảm bảo DOM đã được render
     }
-    
+
     // Hiển thị các món trong hóa đơn
     function renderBillItems() {
         billItemsBody.innerHTML = '';
-        
+
         billItems.forEach((item, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -516,42 +516,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${formatCurrency(item.total)}</td>
                 <td><button class="delete-item" data-index="${index}">Xóa</button></td>
             `;
-            
+
             billItemsBody.appendChild(row);
         });
-        
+
         // Thêm sự kiện cho các nút tăng/giảm số lượng và xóa
         addBillItemEventListeners();
     }
-    
+
     // Thêm sự kiện cho các nút trong hóa đơn
     function addBillItemEventListeners() {
         const decreaseButtons = document.querySelectorAll('.quantity-control .decrease');
         const increaseButtons = document.querySelectorAll('.quantity-control .increase');
         const deleteButtons = document.querySelectorAll('.delete-item');
-        
+
         decreaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const index = parseInt(this.getAttribute('data-index'));
                 decreaseQuantity(index);
             });
         });
-        
+
         increaseButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const index = parseInt(this.getAttribute('data-index'));
                 increaseQuantity(index);
             });
         });
-        
+
         deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const index = parseInt(this.getAttribute('data-index'));
                 removeItem(index);
             });
         });
     }
-    
+
     // Giảm số lượng món trong hóa đơn
     function decreaseQuantity(index) {
         if (billItems[index].quantity > 1) {
@@ -561,14 +561,14 @@ document.addEventListener('DOMContentLoaded', function() {
             renderBillItems();
             calculateTotal();
             updateTableList();
-            
+
             // Highlight món vừa giảm số lượng với hiệu ứng pulse
             highlightBillItemPulse(index);
         } else {
             removeItem(index);
         }
     }
-    
+
     // Hàm highlight với hiệu ứng pulse cho giảm số lượng
     function highlightBillItemPulse(index) {
         setTimeout(() => {
@@ -582,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
     }
-    
+
     // Tăng số lượng món trong hóa đơn
     function increaseQuantity(index) {
         // Lấy món cần tăng số lượng và di chuyển lên đầu
@@ -590,22 +590,22 @@ document.addEventListener('DOMContentLoaded', function() {
         item.quantity += 1;
         item.total = item.price * item.quantity;
         billItems.unshift(item); // Thêm vào đầu danh sách
-        
+
         saveCurrentTableOrder();
         renderBillItems();
         calculateTotal();
         updateTableList();
-        
+
         // Scroll đến đầu danh sách bill items
         const billItemsContainer = document.querySelector('.bill-items tbody');
         if (billItemsContainer) {
             billItemsContainer.scrollTop = 0;
         }
-        
+
         // Highlight món vừa tăng số lượng
         highlightBillItem(0);
     }
-    
+
     // Xóa món khỏi hóa đơn
     function removeItem(index) {
         billItems.splice(index, 1);
@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTotal();
         updateTableList();
     }
-    
+
     // Cập nhật tổng tiền
     function calculateTotal() {
         // Tính tổng tiền từ mảng billItems
@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#discount-amount').textContent = formatCurrency(discountAmount);
         document.querySelector('#total-amount').textContent = formatCurrency(total);
     }
-    
+
     // Định dạng hiển thị tiền tệ
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN', {
@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currency: 'VND'
         }).format(amount);
     }
-    
+
     // Tạo mã hóa đơn ngẫu nhiên
     function generateInvoiceCode() {
         const prefix = 'HD';
@@ -657,17 +657,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
         return `${prefix}${timestamp}${random}`;
     }
-    
+
     // Sự kiện in hóa đơn
-    printBillButton.addEventListener('click', function() {
+    printBillButton.addEventListener('click', function () {
         showBillConfirmation();
     });
-    
+
     // Thêm hàm gửi dữ liệu hóa đơn lên Google Sheets
     function saveInvoiceToGoogleSheet(invoiceData) {
         // Lưu báo cáo local trước
         saveLocalReport(invoiceData);
-        
+
         // Thử gửi lên Google Sheets
         fetch('https://script.google.com/macros/s/AKfycbzpvbol6yaJo1BFwSi4QK-0TbHypr54XVLnd3Csxvm-sFKggVuSFqvra7iwtz2Jf4J8/exec', {
             method: 'POST',
@@ -676,26 +676,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            if (response.ok) {
-                console.log('Gửi báo cáo lên Google Sheets thành công');
-                Toastify({
-                    text: "Báo cáo đã được gửi thành công!",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#4CAF50",
-                    stopOnFocus: true
-                }).showToast();
-            } else {
-                console.error('Lỗi khi gửi báo cáo:', response.status);
-                showReportError('Không thể kết nối đến Google Sheets');
-            }
-        })
-        .catch(error => {
-            console.error('Lỗi khi gửi báo cáo:', error);
-            showReportError('Lỗi kết nối mạng hoặc Google Sheets');
-        });
+            .then(response => {
+                if (response.ok) {
+                    console.log('Gửi báo cáo lên Google Sheets thành công');
+                    Toastify({
+                        text: "Báo cáo đã được gửi thành công!",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4CAF50",
+                        stopOnFocus: true
+                    }).showToast();
+                } else {
+                    console.error('Lỗi khi gửi báo cáo:', response.status);
+                    showReportError('Không thể kết nối đến Google Sheets');
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gửi báo cáo:', error);
+                showReportError('Lỗi kết nối mạng hoặc Google Sheets');
+            });
     }
 
     // Hàm lưu báo cáo local
@@ -708,12 +708,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 ...invoiceData
             };
             reports.push(reportEntry);
-            
+
             // Giữ tối đa 1000 báo cáo gần nhất
             if (reports.length > 1000) {
                 reports.splice(0, reports.length - 1000);
             }
-            
+
             localStorage.setItem('localReports', JSON.stringify(reports));
             console.log('Đã lưu báo cáo local');
         } catch (error) {
@@ -738,15 +738,15 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const reports = JSON.parse(localStorage.getItem('localReports') || '[]');
             if (reports.length === 0) {
-                            Swal.fire({
-                icon: 'info',
-                title: 'ℹ️ Thông báo',
-                text: 'Chưa có báo cáo nào được lưu',
-                confirmButtonText: 'Đóng',
-                customClass: {
-                    popup: 'swal2-popup-unicode'
-                }
-            });
+                Swal.fire({
+                    icon: 'info',
+                    title: 'ℹ️ Thông báo',
+                    text: 'Chưa có báo cáo nào được lưu',
+                    confirmButtonText: 'Đóng',
+                    customClass: {
+                        popup: 'swal2-popup-unicode'
+                    }
+                });
                 return;
             }
 
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const total = report.total || 0;
                 const duration = report.orderDuration || 0;
                 const itemCount = report.items ? report.items.length : 0;
-                
+
                 csvContent += `${date},${time},${tableNumber},${total},${duration},${itemCount}\n`;
             });
 
@@ -825,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Thống kê theo ngày
             const today = new Date().toDateString();
-            const todayReports = reports.filter(report => 
+            const todayReports = reports.filter(report =>
                 new Date(report.timestamp).toDateString() === today
             );
             const todayRevenue = todayReports.reduce((sum, report) => sum + (report.total || 0), 0);
@@ -942,23 +942,23 @@ document.addEventListener('DOMContentLoaded', function() {
         billItems.forEach(item => {
             subtotal += item.total;
         });
-        
+
         const discountType = document.querySelector('input[name="discount-type"]:checked').value;
         const discountValue = parseFloat(document.querySelector('#discount-value').value) || 0;
         let discountAmount = 0;
-        
+
         if (discountType === 'percentage') {
             discountAmount = subtotal * (discountValue / 100);
         } else {
             discountAmount = discountValue;
         }
-        
+
         const total = subtotal - discountAmount;
 
         // Lấy thông tin thời gian
         const now = new Date();
         const dateString = now.toLocaleDateString('vi-VN');
-        const timeString = now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+        const timeString = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
         // Tạo HTML cho thông tin hóa đơn
         let billInfoHTML = '';
@@ -1020,11 +1020,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `,
-            icon: 'info',
             showCancelButton: true,
+            showDenyButton: true, // Thêm nút "Check Bill"
             confirmButtonColor: '#28a745',
             cancelButtonColor: '#6c757d',
+            denyButtonColor: '#ffc107',
             confirmButtonText: 'In hóa đơn',
+            denyButtonText: 'Check Bill',
             cancelButtonText: 'Hủy',
             width: '650px',
             heightAuto: true,
@@ -1052,54 +1054,57 @@ document.addEventListener('DOMContentLoaded', function() {
                         Swal.showLoading();
                     }
                 });
-                
+
                 // Thực hiện in sau 500ms để hiển thị loading
                 setTimeout(() => {
                     Swal.close();
-                    printInvoice();
+                    printInvoice(true);
                 }, 500);
+            } else if (result.isDenied) {
+                // Chỉ in bill mà không xóa hóa đơn
+                printInvoice(false);
             }
         });
     }
 
-    function printInvoice() {
-        
+    function printInvoice(clearBill) {
+
         const paymentMethod = 'Tiền mặt'; // Luôn hiển thị "Tiền mặt"
-        
+
         // Tính tổng tiền và giảm giá
         let subtotal = 0;
         billItems.forEach(item => {
             subtotal += item.total;
         });
-        
+
         // Lấy thông tin giảm giá
         const discountType = document.querySelector('input[name="discount-type"]:checked').value;
         const discountValue = parseFloat(document.querySelector('#discount-value').value) || 0;
         let discountAmount = 0;
-        
+
         if (discountType === 'percentage') {
             discountAmount = subtotal * (discountValue / 100);
         } else {
             discountAmount = discountValue;
         }
-        
+
         const total = subtotal - discountAmount;
-        
+
         const date = new Date();
         const dateString = date.toLocaleDateString('vi-VN');
-        const timeString = date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+        const timeString = date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         const invoiceCode = generateInvoiceCode();
-        
+
         // Lấy thông tin cửa hàng từ localStorage
         const storeName = storeSettings?.storeName || localStorage.getItem('storeName') || 'Cửa hàng';
         const storeAddress = storeSettings?.storeAddress || localStorage.getItem('storeAddress') || 'Địa chỉ cửa hàng';
         const storePhone = storeSettings?.storePhone || '';
         const storeEmail = storeSettings?.storeEmail || '';
-        
+
         // Lấy ghi chú và chính sách đổi trả từ cài đặt
         const invoiceNote = storeSettings?.invoiceNote || 'Trân trọng cảm ơn quý khách!';
         const returnPolicy = storeSettings?.returnPolicy || 'Hẹn gặp lại!';
-        
+
         // Tạo chuỗi HTML cho các mặt hàng trong hóa đơn
         let billItemsHTML = '';
         billItems.forEach((item, index) => {
@@ -1119,7 +1124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </tr>
             `;
         });
-        
+
         // Tạo mã QR nếu cần thiết
         let qrCodeHTML = '';
         if (showQrInBillCheckbox && showQrInBillCheckbox.checked) {
@@ -1141,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
         }
-        
+
         // Tạo thông tin liên hệ
         let contactInfoHTML = '';
         if (storePhone) {
@@ -1150,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (storeEmail) {
             contactInfoHTML += `<p><b>Email:</b> ${storeEmail}</p>`;
         }
-        
+
         // Tạo HTML cho phần tổng kết với giảm giá
         let summaryHTML = '';
         if (discountAmount > 0) {
@@ -1188,7 +1193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </table>
             `;
         }
-        
+
         // Sử dụng mẫu HTML dựa theo invoice-mau.html
         const invoiceTemplate = `
             <!DOCTYPE html>
@@ -1365,105 +1370,109 @@ document.addEventListener('DOMContentLoaded', function() {
             </body>
             </html>
         `;
-        
+
         // Xóa dòng "Vui lòng giữ lại phiếu sau khi thanh toán và khi đổi hàng."
         const cleanedTemplate = invoiceTemplate.replace(/<p>\*\*\s*Vui lòng giữ lại phiếu.*?<\/p>/g, '');
-        
-        console.log(cleanedTemplate);
+
 
         // Sử dụng iframe cho việc in ấn
         const printFrame = document.getElementById('print-frame');
         const printFrameDoc = printFrame.contentDocument || printFrame.contentWindow.document;
-        
+
         // Mở document trong iframe để viết và đóng lại
         printFrameDoc.open();
         printFrameDoc.write(cleanedTemplate);
         printFrameDoc.close();
-        
+
         // Biến để theo dõi trạng thái in
         let isPrinting = false;
-        
+
         // Sau khi tài liệu đã được tải, in ra
-        printFrame.onload = function() {
+        printFrame.onload = function () {
             // Nếu đã bắt đầu in rồi, không thực hiện lại
             if (isPrinting) return;
             isPrinting = true;
-            
+
             try {
                 // Đặt tiêu đề cho cửa sổ in
                 const oldTitle = document.title;
                 document.title = "Hóa đơn - " + invoiceCode;
-                
+
                 printFrame.contentWindow.focus();
                 printFrame.contentWindow.print();
-                
+
                 // Khôi phục tiêu đề
                 document.title = oldTitle;
-                
-                // Gửi dữ liệu hóa đơn lên Google Sheets
-                try {
-                    const now = new Date();
-                    const orderStartTime = tableOrderStartTime || now;
-                    const orderDuration = Math.round((now - orderStartTime) / 1000 / 60); // Thời gian order tính bằng phút
-                    const invoiceData = {
-                        date: dateString,
-                        time: timeString,
-                        year: now.getFullYear(),
-                        month: now.getMonth() + 1,
-                        tableNumber: currentTableNumber,
-                        total: total,
-                        orderStartTime: orderStartTime.toISOString(),
-                        orderEndTime: now.toISOString(),
-                        orderDuration: orderDuration, // Thời gian order (phút)
-                        items: billItems
-                    };
-                    saveInvoiceToGoogleSheet(invoiceData);
-                                    // Xóa dữ liệu order của bàn sau khi chốt bill
-                clearTableOrderData(currentTableNumber);
-                // Xóa khỏi allTableOrders
-                delete allTableOrders[currentTableNumber];
-                saveAllTableOrders();
-            } catch (err) { console.error('Lỗi gửi dữ liệu Google Sheets:', err); }
-            // Cập nhật hiển thị và chọn bàn trống đầu tiên
-            setTimeout(function() {
-                updateTableList();
-                autoSelectEmptyTable();
-            }, 1000);
+
+                // kiểm tra xem có cần xóa hóa đơn sau khi in không
+                if (clearBill) {
+
+                    // Gửi dữ liệu hóa đơn lên Google Sheets
+                    try {
+                        const now = new Date();
+                        const orderStartTime = tableOrderStartTime || now;
+                        const orderDuration = Math.round((now - orderStartTime) / 1000 / 60); // Thời gian order tính bằng phút
+                        const invoiceData = {
+                            date: dateString,
+                            time: timeString,
+                            year: now.getFullYear(),
+                            month: now.getMonth() + 1,
+                            tableNumber: currentTableNumber,
+                            total: total,
+                            orderStartTime: orderStartTime.toISOString(),
+                            orderEndTime: now.toISOString(),
+                            orderDuration: orderDuration, // Thời gian order (phút)
+                            items: billItems
+                        };
+                        //saveInvoiceToGoogleSheet(invoiceData);
+                        // Xóa dữ liệu order của bàn sau khi chốt bill
+                        clearTableOrderData(currentTableNumber);
+                        // Xóa khỏi allTableOrders
+                        delete allTableOrders[currentTableNumber];
+                        saveAllTableOrders();
+                    } catch (err) { console.error('Lỗi gửi dữ liệu Google Sheets:', err); }
+                    // Cập nhật hiển thị và chọn bàn trống đầu tiên
+                    setTimeout(function () {
+                        updateTableList();
+                        autoSelectEmptyTable();
+                    }, 1000);
+                }
+
             } catch (e) {
                 console.error("Lỗi khi in:", e);
                 // Phương án dự phòng: sử dụng cách cũ
                 printArea.innerHTML = cleanedTemplate;
-                setTimeout(function() {
+                setTimeout(function () {
                     window.print();
                 }, 300);
             }
         };
-        
+
         // Nếu onload không được kích hoạt sau 2 giây, sử dụng lại phương pháp cũ
-        const fallbackTimeout = setTimeout(function() {
+        const fallbackTimeout = setTimeout(function () {
             if (!isPrinting) {
                 console.log("Không thể in qua iframe, sử dụng phương pháp dự phòng");
                 isPrinting = true;
                 printArea.innerHTML = cleanedTemplate;
-                setTimeout(function() {
+                setTimeout(function () {
                     window.print();
                 }, 300);
             }
         }, 2000);
-        
+
         // Đánh dấu là đã được tải
-        printFrameDoc.body.onload = function() {
+        printFrameDoc.body.onload = function () {
             printFrame.onload();
             clearTimeout(fallbackTimeout);
         };
-        
+
         // Sau khi in xong, reset giá trị giảm giá về 0
         setTimeout(() => {
             document.querySelector('#discount-value').value = '0';
             calculateTotal();
             // Cập nhật hiển thị danh sách bàn
             updateTableList();
-            
+
             // Hiển thị thông báo thành công
             Toastify({
                 text: "In hóa đơn thành công!",
@@ -1475,15 +1484,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }).showToast();
         }, 1000);
     }
-    
+
     // Hàm xóa hóa đơn
     function clearBill() {
         // Xác nhận trước khi xóa
         if (billItems.length > 0) {
-            const confirmMessage = currentTableNumber ? 
-                `Bạn có chắc muốn xóa hóa đơn của bàn ${currentTableNumber}?` : 
+            const confirmMessage = currentTableNumber ?
+                `Bạn có chắc muốn xóa hóa đơn của bàn ${currentTableNumber}?` :
                 'Bạn có chắc muốn xóa hóa đơn hiện tại?';
-            
+
             Swal.fire({
                 title: 'Xác nhận xóa hóa đơn',
                 text: confirmMessage,
@@ -1500,46 +1509,46 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             return;
         }
-        
+
         // Nếu không có món ăn nào, xóa trực tiếp
         performClearBill();
     }
-    
+
     // Hàm thực hiện xóa hóa đơn
     function performClearBill() {
-        
+
         // Xóa order của bàn hiện tại khỏi allTableOrders
         if (currentTableNumber && allTableOrders[currentTableNumber]) {
             delete allTableOrders[currentTableNumber];
             saveAllTableOrders();
         }
-        
+
         // Reset dữ liệu hóa đơn
         billItems = [];
         renderBillItems();
         calculateTotal();
-        
+
         // Reset các trường input
         if (customerNameInput) customerNameInput.value = '';
         if (tableNumberInput) tableNumberInput.value = '';
-        
+
         // Reset thời gian order
         tableOrderStartTime = null;
-        
+
         // Reset giá trị giảm giá về 0
         document.querySelector('#discount-value').value = '0';
         calculateTotal();
-        
+
         // Xóa số bàn hiện tại
         currentTableNumber = '';
-        
+
         // Tự động chọn bàn trống đầu tiên
         autoSelectEmptyTable();
-        
+
         // Cập nhật hiển thị
         updateTableNumberDisplay();
         updateTableList();
-        
+
         // Thông báo xóa thành công
         if (billItems.length === 0) {
             setTimeout(() => {
@@ -1554,9 +1563,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
         }
     }
-    
+
     // Sự kiện xóa hóa đơn
-    clearBillButton.addEventListener('click', function() {
+    clearBillButton.addEventListener('click', function () {
         // Hiển thị loading nếu có món ăn trong hóa đơn
         if (billItems.length > 0) {
             Swal.fire({
@@ -1569,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Swal.showLoading();
                 }
             });
-            
+
             // Thực hiện xóa sau 300ms để hiển thị loading
             setTimeout(() => {
                 Swal.close();
@@ -1579,7 +1588,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearBill();
         }
     });
-    
+
     // Tạo một số món ăn mẫu để hiển thị khi không có file Excel
     function createMenuItems() {
         menuItems = [
@@ -1607,7 +1616,7 @@ document.addEventListener('DOMContentLoaded', function() {
             { name: 'Lẩu Hải Sản Chua Cay', price: 200000, image: 'default.jpg' },
             { name: 'Lẩu Cua Đồng Thác Lác', price: 210000, image: 'default.jpg' },
             { name: 'Lẩu Cá Bông Lau', price: 180000, image: 'default.jpg' },
-    
+
             { name: 'Bò Nướng BBQ', price: 180000, image: 'default.jpg' },
             { name: 'Bò Nhúng Giấm', price: 170000, image: 'default.jpg' },
             { name: 'Bò Nướng Y', price: 150000, image: 'default.jpg' },
@@ -1616,7 +1625,7 @@ document.addEventListener('DOMContentLoaded', function() {
             { name: 'Bò Lúc Lắc', price: 150000, image: 'default.jpg' },
             { name: 'Bò Bóp Thấu', price: 150000, image: 'default.jpg' },
             { name: 'Bò Cuộn Mỡ Chày', price: 210000, image: 'default.jpg' },
-    
+
             { name: 'Giò Heo Muối Chiên Giòn', price: 200000, image: 'default.jpg' },
             { name: 'Vú Heo Nướng Sa Tế', price: 150000, image: 'default.jpg' },
             { name: 'Vú Heo Chiên Nước Mắm', price: 150000, image: 'default.jpg' },
@@ -1624,14 +1633,14 @@ document.addEventListener('DOMContentLoaded', function() {
             { name: 'Thịt Luộc Mắm Chua', price: 150000, image: 'default.jpg' },
             { name: 'Heo Sữa Quay Phần', price: 450000, image: 'default.jpg' },
             { name: 'Vú Heo Nướng Muối Ớt', price: 150000, image: 'default.jpg' },
-    
+
             { name: 'Ếch Cháy Tỏi', price: 100000, image: 'default.jpg' },
             { name: 'Ếch Núp Lùm', price: 100000, image: 'default.jpg' },
             { name: 'Ếch Nướng Muối Ớt', price: 100000, image: 'default.jpg' },
             { name: 'Ếch Chiên Nước Mắm', price: 100000, image: 'default.jpg' },
             { name: 'Ếch Xào Lá Giang', price: 100000, image: 'default.jpg' },
             { name: 'Ếch Chiên Bơ', price: 100000, image: 'default.jpg' },
-    
+
             { name: 'Heo Sữa Quay', price: 450000, image: 'default.jpg' },
             { name: 'Sườn Tảng Quay Lu', price: 350000, image: 'default.jpg' },
             { name: 'Gà Ta Nướng Muối Ớt Xôi Chiên', price: 350000, image: 'default.jpg' },
@@ -1644,25 +1653,25 @@ document.addEventListener('DOMContentLoaded', function() {
             { name: 'Tép Um Cuốn Bánh Tráng', price: 150000, image: 'default.jpg' },
             { name: 'Heo Sữa Quay Nguyên Con', price: 2000000, image: 'default.jpg' }
         ];
-    
+
         renderMenuItems();
     }
-    
+
     // Hiển thị modal chọn bàn
     function showTableSelectionModal() {
         if (document.getElementById('table-selection-modal')) return;
-        
+
         const modal = document.createElement('div');
         modal.id = 'table-selection-modal';
         modal.className = 'settings-modal';
-        
+
         // Tạo danh sách bàn
         let tableButtons = '';
         for (let i = 1; i <= totalTables; i++) {
             const hasOrder = allTableOrders[i] && allTableOrders[i].items && allTableOrders[i].items.length > 0;
             const orderCount = hasOrder ? allTableOrders[i].items.length : 0;
             const orderTotal = hasOrder ? allTableOrders[i].items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
-            
+
             tableButtons += `
                 <div class="table-button ${hasOrder ? 'has-order' : ''}" data-table="${i}">
                     <div class="table-number">Bàn ${i}</div>
@@ -1675,7 +1684,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
-        
+
         modal.innerHTML = `
             <div class="settings-modal-content">
                 <h2>Chọn bàn</h2>
@@ -1687,9 +1696,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
-        
+
         // Thêm CSS cho modal chọn bàn
         if (!document.getElementById('table-selection-style')) {
             const style = document.createElement('style');
@@ -1758,18 +1767,18 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             document.head.appendChild(style);
         }
-        
+
         // Sự kiện chọn bàn
         document.querySelectorAll('.table-button').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const tableNumber = this.getAttribute('data-table');
                 selectTable(tableNumber);
                 document.body.removeChild(modal);
             });
         });
-        
+
         // Sự kiện hủy
-        document.getElementById('modal-cancel-table').addEventListener('click', function() {
+        document.getElementById('modal-cancel-table').addEventListener('click', function () {
             document.body.removeChild(modal);
         });
     }
@@ -1778,7 +1787,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function selectTable(tableNumber) {
         currentTableNumber = tableNumber;
         if (tableNumberInput) tableNumberInput.value = tableNumber;
-        
+
         // Tải order của bàn này
         if (allTableOrders[tableNumber]) {
             billItems = [...allTableOrders[tableNumber].items];
@@ -1787,7 +1796,7 @@ document.addEventListener('DOMContentLoaded', function() {
             billItems = [];
             tableOrderStartTime = null;
         }
-        
+
         renderBillItems();
         calculateTotal();
         updateTableNumberDisplay();
@@ -1808,7 +1817,7 @@ document.addEventListener('DOMContentLoaded', function() {
             saveAllTableOrders();
         }
     }
-    
+
     // Hiển thị modal nhập số bàn
     function showTableNumberModal() {
         // Thay thế bằng modal chọn bàn
@@ -1895,7 +1904,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('modal-table-number').focus();
         }, 100);
         // Sự kiện xác nhận
-        document.getElementById('modal-save-table-number').addEventListener('click', function() {
+        document.getElementById('modal-save-table-number').addEventListener('click', function () {
             const value = document.getElementById('modal-table-number').value.trim();
             if (!value) {
                 Swal.fire({
@@ -1920,7 +1929,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(modal);
         });
         // Cho phép nhấn Enter để xác nhận
-        document.getElementById('modal-table-number').addEventListener('keydown', function(e) {
+        document.getElementById('modal-table-number').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 document.getElementById('modal-save-table-number').click();
             }
@@ -1945,7 +1954,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasOrder = allTableOrders[currentTableNumber] && allTableOrders[currentTableNumber].items && allTableOrders[currentTableNumber].items.length > 0;
             const orderCount = hasOrder ? allTableOrders[currentTableNumber].items.length : 0;
             const orderTotal = hasOrder ? allTableOrders[currentTableNumber].items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
-            
+
             display.innerHTML = `
                 <div class="table-display">
                     <div class="table-number">Bàn ${currentTableNumber}</div>
@@ -1961,24 +1970,24 @@ document.addEventListener('DOMContentLoaded', function() {
             display.textContent = '';
         }
     }
-    
+
     // Hiển thị danh sách bàn
     function renderTableList() {
         const tableListGrid = document.getElementById('table-list-grid');
         if (!tableListGrid) return;
-        
+
         tableListGrid.innerHTML = '';
-        
+
         for (let i = 1; i <= totalTables; i++) {
             const hasOrder = allTableOrders[i] && allTableOrders[i].items && allTableOrders[i].items.length > 0;
             const orderCount = hasOrder ? allTableOrders[i].items.length : 0;
             const orderTotal = hasOrder ? allTableOrders[i].items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
             const isCurrentTable = currentTableNumber === i.toString();
-            
+
             const tableItem = document.createElement('div');
             tableItem.className = `table-list-item ${hasOrder ? 'has-order' : ''} ${isCurrentTable ? 'current-table' : ''}`;
             tableItem.setAttribute('data-table', i);
-            
+
             tableItem.innerHTML = `
                 <div class="table-list-number">Bàn ${i}</div>
                 ${hasOrder ? `
@@ -1991,8 +2000,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="table-list-empty">Trống</div>
                 `}
             `;
-            
-            tableItem.addEventListener('click', function(e) {
+
+            tableItem.addEventListener('click', function (e) {
                 // Không chọn bàn nếu click vào nút xóa
                 if (e.target.classList.contains('table-clear-btn')) {
                     e.stopPropagation();
@@ -2001,11 +2010,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 selectTable(i.toString());
             });
-            
+
             tableListGrid.appendChild(tableItem);
         }
     }
-    
+
     // Tự động chọn bàn trống đầu tiên
     function autoSelectEmptyTable() {
         for (let i = 1; i <= totalTables; i++) {
@@ -2023,16 +2032,16 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTableNumberDisplay();
         }
     }
-    
+
     // Cập nhật hiển thị danh sách bàn
     function updateTableList() {
         renderTableList();
     }
-    
+
     // Xóa hóa đơn của bàn cụ thể
     function clearTableBill(tableNumber) {
         if (!tableNumber) return;
-        
+
         const confirmMessage = `Bạn có chắc muốn xóa hóa đơn của bàn ${tableNumber}?`;
         Swal.fire({
             title: 'Xác nhận xóa hóa đơn',
@@ -2049,19 +2058,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Hàm thực hiện xóa hóa đơn bàn
     function performClearTableBill(tableNumber) {
-        
+
         // Xóa order của bàn khỏi allTableOrders
         if (allTableOrders[tableNumber]) {
             delete allTableOrders[tableNumber];
             saveAllTableOrders();
         }
-        
+
         // Xóa dữ liệu order của bàn
         clearTableOrderData(tableNumber);
-        
+
         // Nếu đang chọn bàn này, reset hóa đơn hiện tại
         if (currentTableNumber === tableNumber) {
             billItems = [];
@@ -2071,11 +2080,11 @@ document.addEventListener('DOMContentLoaded', function() {
             currentTableNumber = '';
             autoSelectEmptyTable();
         }
-        
+
         // Cập nhật hiển thị
         updateTableNumberDisplay();
         updateTableList();
-        
+
         // Thông báo xóa thành công
         setTimeout(() => {
             Toastify({
@@ -2088,7 +2097,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }).showToast();
         }, 100);
     }
-    
+
     // Khởi tạo ứng dụng với bố cục mới
     function initialize() {
         // Đảm bảo có thông tin mặc định
@@ -2130,12 +2139,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Thêm sự kiện cho nút refresh
         const refreshButton = document.getElementById('refresh-tables');
         if (refreshButton) {
-            refreshButton.addEventListener('click', function() {
+            refreshButton.addEventListener('click', function () {
                 updateTableList();
             });
         }
     }
-    
+
     // Bắt đầu ứng dụng
     initialize();
 
@@ -2161,4 +2170,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('show-statistics').addEventListener('click', showReportStatistics);
     document.getElementById('export-reports').addEventListener('click', exportLocalReports);
     document.getElementById('clear-reports').addEventListener('click', clearLocalReports);
-}); 
+});

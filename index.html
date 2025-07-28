@@ -49,24 +49,27 @@
         /* Styles mới cho layout 3 cột */
         .main-layout {
             display: flex;
-            gap: 20px;
-            height: calc(100vh - 120px);
+            gap: 10px;
+            height: calc(100vh - 100px); /* giảm chiều cao header */
         }
         
         .left-column {
-            flex: 0.8;
-            min-width: 250px;
-            max-width: 300px;
+            flex: 0.7;
+            min-width: 180px;
+            max-width: 220px;
         }
         
         .middle-column {
-            flex: 1.2;
-            min-width: 400px;
+            flex: 1.5;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
         .right-column {
-            flex: 1;
-            min-width: 350px;
+            flex: 0.8;
+            min-width: 550px;
         }
         
         .bottom-section {
@@ -379,15 +382,135 @@
                 font-size: 13px;
             }
         }
+
+        .menu-section {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .menu-header {
+            flex-shrink: 0;
+        }
+
+        #menu-container {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #menu-items.menu-grid {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            min-height: 0;
+            max-height: calc(100vh - 260px); /* 260px là tổng chiều cao header, search, nút, padding... */
+        }
+
+        @media (max-width: 1400px) {
+            .main-layout {
+                gap: 6px;
+            }
+            .left-column { min-width: 150px; max-width: 180px; }
+            .middle-column { min-width: 280px; }
+            .right-column { min-width: 180px; }
+            .table-list-header h3,
+            .menu-header h2,
+            .report-section h3 { font-size: 13px; }
+        }
+
+        /* Điều chỉnh layout cho màn hình 1366x768 */
+        .main-layout {
+            display: flex;
+            gap: 8px;
+            height: calc(100vh - 80px); /* Giảm chiều cao header */
+        }
+
+        .left-column {
+            flex: 0.6;
+            min-width: 150px;
+            max-width: 200px;
+        }
+
+        .middle-column {
+            flex: 1;
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .right-column {
+            flex: 0.8;
+            min-width: 550px;
+        }
+
+        /* Hạn chế cuộn dọc cho danh sách món đã chọn và tổng tiền */
+        .bill-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .bill-summary {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        /* Tăng kích thước nút để dễ nhấn */
+        .btn-refresh, .bill-actions button, .menu-controls button {
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+        }
+
+        /* Giảm khoảng cách padding/margin */
+        .table-list-header, .menu-header {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+        }
+
+        .table-list-item {
+            padding: 10px 6px;
+        }
+
+        .bill-summary-row {
+            font-size: 14px;
+        }
+
+        /* Responsive cho màn hình nhỏ hơn */
+        @media (max-width: 1366px) {
+            .main-layout {
+                gap: 6px;
+            }
+
+            .left-column {
+                min-width: 140px;
+                max-width: 180px;
+            }
+
+            .middle-column {
+                min-width: 350px;
+            }
+
+            .right-column {
+                min-width: 200px;
+            }
+
+            .btn-refresh, .bill-actions button, .menu-controls button {
+                font-size: 12px;
+            }
+
+            .bill-summary-row {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header-with-action">
-            <h1>Chú Gà Trống Tây Ninh</h1>
-            <a href="settings.html" class="settings-button">Cài đặt</a>
-        </div>
-        
+      
         <div class="main-layout">
             <!-- Cột bên trái - Danh sách bàn -->
             <div class="left-column">
@@ -453,7 +576,7 @@
                     </div>
                     
                     <div class="bill-summary">
-                        <div class="discount-section">
+                        <div class="discount-section" style="display: none;">
                             <div class="discount-type">
                                 <label>
                                     <input type="radio" name="discount-type" value="percentage" checked> Giảm theo %
@@ -468,7 +591,7 @@
                             </div>
                         </div>
                         <div class="subtotal">Tiền hàng: <span id="subtotal-amount">0</span>đ</div>
-                        <div class="discount-amount">Giảm giá: <span id="discount-amount">0</span>đ</div>
+                        <div class="discount-amount" style="display: none;">Giảm giá: <span id="discount-amount">0</span>đ</div>
                         <div class="total">Tổng tiền: <span id="total-amount">0</span>đ</div>
                     </div>
                     
@@ -481,7 +604,7 @@
         </div>
         
         <!-- Phần dưới cùng - Báo cáo và thống kê -->
-        <div class="bottom-section">
+        <div class="bottom-section" style="display:none;">
             <div class="report-section">
                 <h3>📊 Báo cáo và thống kê</h3>
                 <div class="report-controls">
@@ -497,6 +620,10 @@
                         <span class="btn-icon">&#x26D4;</span>
                         Xóa báo cáo
                     </button>
+                    <a href="settings.html" id="print-reports" class="btn-secondary">
+                        <span class="btn-icon">🖨️</span>
+                       Cài đặt
+                    </a>
                 </div>
                 <div class="report-info">
                     <small>💡 Báo cáo được lưu tự động khi in hóa đơn. Dữ liệu được lưu local và có thể xuất ra file CSV.</small>
@@ -527,4 +654,4 @@
     
     <script src="script.js"></script>
 </body>
-</html> 
+</html>
